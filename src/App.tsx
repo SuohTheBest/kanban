@@ -20,7 +20,7 @@ const App: React.FC = () => {
                 {isSidebarVisible && <Sidebar/>}
                 <div className="flex flex-col w-full bg-sky-100">
                     <ProjectTopBar/>
-                    <div className="flex pl-6 pt-8 w-full">
+                    <div className="flex flex-row ">
                         <Swimlane title="待办">
                             <Card title="test" date="10 JUL" label="stb"/>
                             <Card title="test" date="10 JUL" label="stb"/>
