@@ -1,22 +1,24 @@
-import React, {useState} from 'react';
+import React from 'react';
 import ExpandablePanel from './ExpandablePanel';
 import addButton from "./assets/add_circle.svg";
 import {Paper} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 
+interface SidebarProps {
+    width: number;
+    setWidth: (width: number) => void;
+}
 
-const Sidebar: React.FC = () => {
-    const [sidebarWidth, setSidebarWidth] = useState(200);
-
+const Sidebar: React.FC<SidebarProps> = ({width,setWidth}) => {
     const handleMouseDown = (e: React.MouseEvent) => {
         const startX = e.clientX;
-        const startWidth = sidebarWidth;
+        const startWidth = width;
 
         const handleMouseMove = (e: MouseEvent) => {
             let newWidth = startWidth + e.clientX - startX;
             if (newWidth > 500) newWidth = 500;
-            if (newWidth < 100) newWidth = 100;
-            setSidebarWidth(newWidth);
+            if (newWidth < 200) newWidth = 200;
+            setWidth(newWidth);
         };
         const handleMouseUp = () => {
             document.removeEventListener('mousemove', handleMouseMove);
@@ -29,18 +31,16 @@ const Sidebar: React.FC = () => {
 
     return (
         <Paper elevation={3}>
-            <div className={"flex-row flex h-full"}>
-                <div className="flex h-full top-0 left-0 bg-gray-100 pt-5">
-                    <div style={{width: sidebarWidth}}>
-                        <div className="flex items-center justify-between px-3 mb-5">
+            <div className={"flex-row flex h-full fixed"}>
+                <div className="flex h-full pt-20 left-0 bg-gray-100">
+                    <div style={{width: width}}>
+                        <div className="flex items-center justify-between px-3 mb-1">
                             <h2 className="text-lg text-black font-bold">项目</h2>
                             <IconButton className="p-1 rounded bg-transparent">
                                 <img src={addButton} alt="Add" className="w-6 h-6"/>
                             </IconButton>
                         </div>
-                        <ExpandablePanel title="最近项目">
-                            <p className="text-black">Content for Panel 1</p>
-                        </ExpandablePanel>
+                        <ExpandablePanel title="最近项目"/>
                     </div>
                 </div>
                 <div

@@ -1,43 +1,44 @@
-import React, {useState, ReactNode} from "react";
-import chevron_right from "./assets/chevron_right.svg"
-import arrow_down from "./assets/arrow_down.svg";
+import React from "react";
+import {ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
+import Collapse from '@material-ui/core/Collapse';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import ExpandLess from '@mui/icons-material/NavigateNextOutlined';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import List from '@material-ui/core/List';
+import {StarBorder} from "@mui/icons-material";
 
 interface ExpandablePanelProps {
-    title: string;
-    children: ReactNode;
+    title: string
 }
 
-const ExpandablePanel: React.FC<ExpandablePanelProps> = ({title, children}) => {
-    const [isOpen, setIsOpen] = useState(false);
+const ExpandablePanel: React.FC<ExpandablePanelProps> = ({title}) => {
+    const [isopen, setIsopen] = React.useState(true);
 
-    const togglePanel = () => {
-        setIsOpen(!isOpen);
+    const handleClick = () => {
+        setIsopen(!isopen);
     };
 
     return (
-        <div className="mb-4">
-            <div
-                className="flex items-center cursor-pointer bg-transparent p-4 text-gray-500 h-2"
-                onClick={togglePanel}>
-                {!isOpen && (
-                    <button className="p-1 rounded bg-transparent">
-                        <img src={chevron_right} alt='Expand' className="w-4 h-4"></img>
-                    </button>
-                )}
-                {isOpen&& (
-                    <button className="p-1 rounded bg-transparent">
-                        <img src={arrow_down} alt='Expand' className="w-4 h-4"></img>
-                    </button>
-                )}
-                <h3 className="font-normal p-2">{title}</h3>
-            </div>
-            {isOpen && (
-                <div className="bg-transparent p-4">
-                    {children}
-                </div>
-            )}
-        </div>
-    );
-};
-
+        <List>
+            <ListItem button onClick={handleClick}>
+                <ListItemIcon>
+                    <InboxIcon/>
+                </ListItemIcon>
+                <ListItemText primary={title}/>
+                {isopen ? <ExpandMore/> : <ExpandLess/>}
+            </ListItem>
+            <Collapse in={isopen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                    <ListItem button className="pl-4">
+                        <ListItemIcon>
+                            <StarBorder/>
+                        </ListItemIcon>
+                        <ListItemText primary="Starred"/>
+                    </ListItem>
+                </List>
+            </Collapse>
+        </List>
+    )
+        ;
+}
 export default ExpandablePanel;
