@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({width,setWidth}) => {
     return (
         <Paper elevation={3}>
             <div className={"flex-row flex h-full fixed"}>
-                <div className="flex h-full pt-20 left-0 bg-gray-100">
+                <div className="flex h-full pt-20 left-0 bg-white">
                     <div style={{width: width}}>
                         <div className="flex items-center justify-between px-3 mb-1">
                             <h2 className="text-lg text-black font-bold">项目</h2>
@@ -40,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({width,setWidth}) => {
                                 <img src={addButton} alt="Add" className="w-6 h-6"/>
                             </IconButton>
                         </div>
-                        <ExpandablePanel title="最近项目"/>
+                        <ExpandablePanel/>
                     </div>
                 </div>
                 <div

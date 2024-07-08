@@ -22,10 +22,6 @@ const useStyles = makeStyles((theme: Theme) =>
             alignItems: 'center',
             justifyContent: 'center',
         },
-        button: {
-            display: 'inline-flex',
-            maxWidth: '8rem',
-        },
         small: {
             width: theme.spacing(3),
             height: theme.spacing(3),
@@ -35,15 +31,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface TaskModalProps {
     isOpen: boolean;
-    setOpen: (isOpen: boolean) => void;
+    handleClose: () => void;
 }
 
 
-const TaskModal: React.FC<TaskModalProps> = ({isOpen, setOpen}) => {
+const TaskModal: React.FC<TaskModalProps> = ({isOpen, handleClose}) => {
     const classes = useStyles();
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     const [FoldDetail, setFoldDetail] = React.useState(false);
 
@@ -63,85 +56,96 @@ const TaskModal: React.FC<TaskModalProps> = ({isOpen, setOpen}) => {
             }}
         >
             <Fade in={isOpen}>
-                <Container fixed className="flex flex-col px-4 pb-10 pt-8 bg-white">
-                    <div className="flex items-center ml-5 mb-2 justify-between">
-                        <h1 className="font-semibold text-2xl"> title </h1>
-                        <IconButton className="rounded"> <CloseOutlinedIcon/> </IconButton>
-                    </div>
-                    <div className="flex">
-                        <Container sx={{
-                            maxHeight: '75vh',
-                            overflow: 'auto',
-                        }}
-                                   className="flex flex-row mr-3 mb-1 overflow-y-auto">
-                            <Button
-                                startIcon={<AttachFileOutlinedIcon/>}
-                                variant="contained"
-                                classes={{
-                                    root: classes.button,
-                                }}
-                            >
-                                添加附件
-                            </Button>
-                            <h2 className="pt-5 font-semibold pb-2">描述</h2>
-                            <Textarea
-                                placeholder="编辑描述"
-                                variant="plain"
-                                maxRows={4}
-                            >
-                            </Textarea>
-                            <h2 className="pt-5 font-semibold">活动</h2>
-                            <CommentZone imgLink='broken'>
-                                <CommentBox imgLink='broken' userName='stb'
-                                            content='汪大吼汪大吼汪大吼汪大吼'></CommentBox>
-                            </CommentZone>
-                        </Container>
-                        <Container
-                            sx={{
+                <div className='w-[100vh]'>
+                    <Container fixed className="flex flex-col px-4 pb-10 pt-8 bg-white">
+                        <div className="flex items-center ml-5 mb-2 justify-between">
+                            <h1 className="font-semibold text-2xl"> title </h1>
+                            <IconButton className="rounded" onClick={handleClose}> <CloseOutlinedIcon/> </IconButton>
+                        </div>
+                        <div className="flex">
+                            <Container sx={{
                                 maxHeight: '75vh',
                                 overflow: 'auto',
-                            }}
-                            className="flex flex-col ml-3 mb-1 overflow-y-auto">
-                            <Button
-                                endIcon={<KeyboardArrowDownOutlinedIcon/>}
-                                variant="contained"
-                            >
-                                Type
-                            </Button>
-                            <div className='border rounded-lg mt-5'>
-                                <Button className='w-full' onClick={toggleFoldDetail}>
-                                    <h2 className="font-semibold">详细信息</h2>
-                                    {!FoldDetail && <KeyboardArrowDownOutlinedIcon/>}
-                                    {FoldDetail && <KeyboardArrowRightOutlinedIcon/>}
+                                flex: 6,
+                            }} className="flex flex-row mr-3 mb-1 overflow-y-auto">
+                                <input
+                                    accept="*"
+                                    className='hidden'
+                                    id="button-file"
+                                    multiple
+                                    type="file"
+                                />
+                                <label htmlFor='button-file'>
+                                    <Button
+                                        startIcon={<AttachFileOutlinedIcon/>}
+                                        variant="contained"
+                                        component="span"
+                                    >
+                                        添加附件
+                                    </Button>
+                                </label>
+                                <h2 className="pt-5 font-semibold pb-2">描述</h2>
+                                <Textarea
+                                    placeholder="编辑描述"
+                                    variant="plain"
+                                    maxRows={4}
+                                >
+                                    12334444
+                                </Textarea>
+                                <h2 className="pt-5 font-semibold">活动</h2>
+                                <CommentZone imgLink='broken'>
+                                    <CommentBox imgLink='broken' userName='stb'
+                                                content='汪大吼汪大吼汪大吼汪大吼'></CommentBox>
+                                </CommentZone>
+                            </Container>
+                            <Container
+                                sx={{
+                                    maxHeight: '75vh',
+                                    overflow: 'auto',
+                                    flex: 4,
+                                }}
+                                className="flex flex-col ml-3 mb-1 overflow-y-auto">
+                                <Button
+                                    endIcon={<KeyboardArrowDownOutlinedIcon/>}
+                                    variant="contained"
+                                >
+                                    Type
                                 </Button>
-                                {!FoldDetail &&
-                                    <>
-                                        <hr className='w-full'/>
-                                        <div className='p-3'>
-                                            <div className='flex py-3 items-center justify-between'>
-                                                <h3 className='text-sm '>发起人</h3>
-                                                <AvatarWithName src='broken' name='name'/>
+                                <div className='border rounded-lg mt-5'>
+                                    <Button className='w-full' onClick={toggleFoldDetail}>
+                                        <h2 className="font-semibold">详细信息</h2>
+                                        {!FoldDetail && <KeyboardArrowDownOutlinedIcon/>}
+                                        {FoldDetail && <KeyboardArrowRightOutlinedIcon/>}
+                                    </Button>
+                                    {!FoldDetail &&
+                                        <>
+                                            <hr className='w-full'/>
+                                            <div className='p-3'>
+                                                <div className='flex py-3 items-center justify-between'>
+                                                    <h3 className='text-sm '>发起人</h3>
+                                                    <AvatarWithName src='broken' name='name'/>
+                                                </div>
+                                                <div className='flex py-3 items-center justify-between'>
+                                                    <h3 className='text-sm py-3'>开始日期</h3>
+                                                    <DateYMD year={2024} month={12} day={12}/>
+                                                </div>
+                                                <div className='flex py-3 items-center justify-between'>
+                                                    <h3 className='text-sm py-3'>截止日期</h3>
+                                                    <DateYMD year={2024} month={12} day={12}/>
+                                                </div>
                                             </div>
-                                            <div className='flex py-3 items-center justify-between'>
-                                                <h3 className='text-sm py-3'>开始日期</h3>
-                                                <DateYMD year={2024} month={12} day={12}/>
-                                            </div>
-                                            <div className='flex py-3 items-center justify-between'>
-                                                <h3 className='text-sm py-3'>截止日期</h3>
-                                                <DateYMD year={2024} month={12} day={12}/>
-                                            </div>
-                                        </div>
 
-                                    </>
-                                }
-                            </div>
-                            <div className='pt-4 text-sm pl-3 text-gray-500'>
-                                <p>已创建 4天前</p>
-                                <p>更新日期 4天前</p>
-                            </div>
-                        </Container>
-                    </div>
-                </Container>
+                                        </>
+                                    }
+                                </div>
+                                <div className='pt-8 text-sm pl-3 text-gray-500'>
+                                    <p>已创建 4天前</p>
+                                    <p>更新日期 4天前</p>
+                                </div>
+                            </Container>
+                        </div>
+                    </Container>
+                </div>
             </Fade>
         </Modal>
     );

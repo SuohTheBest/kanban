@@ -21,18 +21,18 @@ const App: React.FC = () => {
             <TopBar toggleSidebar={toggleSidebar}/>
             <div className="flex w-full h-full">
                 {isSidebarVisible && <Sidebar width={sidebarWidth} setWidth={setSidebarWidth}/>}
-                <div className="flex flex-col pt-16 w-full h-full bg-sky-100"
+                <div className="flex flex-col pt-16 w-full h-full bg-[#e9f2ff]"
                      style={{paddingLeft: isSidebarVisible ? sidebarWidth + 2 : 0}}>
                     <ProjectTopBar/>
                     <div className="flex h-full overflow-x-auto overflow-y-auto flex-row ">
-                        <Swimlane title="待办">
+                        <Swimlane title="待办" hasCreate={true}>
                             <Card title="test" date="10 JUL" label="stb"/>
                             <Card title="test" date="10 JUL" label="stb"/>
                         </Swimlane>
-                        <Swimlane title="正在进行">
+                        <Swimlane title="正在进行" hasCreate={false}>
                             {}
                         </Swimlane>
-                        <Swimlane title="已完成">
+                        <Swimlane title="已完成" hasCreate={false}>
                             {}
                         </Swimlane>
                     </div>
