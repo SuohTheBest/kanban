@@ -8,7 +8,6 @@ import Container from "@mui/material/Container";
 import IconButton from "@material-ui/core/IconButton";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import {Textarea} from "@mui/joy";
-import {DateSelector} from "./Common.tsx";
 import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(() =>
@@ -28,12 +27,12 @@ const useStyles = makeStyles(() =>
     }),
 );
 
-interface TaskModalProps {
+interface ProjectProps {
     isOpen: boolean;
     handleClose: () => void;
 }
 
-const CreateTaskModal: React.FC<TaskModalProps> = ({isOpen, handleClose}) => {
+const CreateProjectModal: React.FC<ProjectProps> = ({isOpen, handleClose}) => {
     const classes = useStyles();
     return (
         <Modal className={classes.modal}
@@ -48,23 +47,13 @@ const CreateTaskModal: React.FC<TaskModalProps> = ({isOpen, handleClose}) => {
                 <div className='w-[60vh]'>
                     <Container fixed className="flex flex-col px-4 pb-10 pt-8 bg-white">
                         <div className="flex items-center ml-5 mb-2 justify-between">
-                            <h1 className="font-semibold text-2xl"> 创建任务 </h1>
+                            <h1 className="font-semibold text-2xl"> 创建项目 </h1>
                             <IconButton className="rounded" onClick={handleClose}> <CloseOutlinedIcon/> </IconButton>
                         </div>
                         <div className="flex flex-col mt-5 ml-5 mb-2">
-                            <h2 className="font-semibold mr-4 pb-5"> 主题 </h2>
-                            <Textarea placeholder="需要做什么？" maxRows={2}></Textarea>
+                            <h2 className="font-semibold mr-4 pb-5"> 名称 </h2>
+                            <Textarea placeholder="团队名称、项目名称、里程碑......" maxRows={2}></Textarea>
                         </div>
-                        <div className="flex items-center mt-5 ml-5 mb-2 justify-between">
-                            <h2 className="font-semibold mr-4"> 开始日期 </h2>
-                            <DateSelector label='开始日期'/>
-                        </div>
-                        <div className="flex items-center mt-5 ml-5 mb-2 justify-between">
-                            <h2 className="font-semibold mr-4"> 截止日期 </h2>
-                            <DateSelector label='开始日期'/>
-                        </div>
-                        <h2 className="mt-5 ml-5 mb-2 font-semibold  mr-4"> 描述 (可选) </h2>
-                        <Textarea className="ml-5 mt-5" placeholder="添加描述" maxRows={4}></Textarea>
                         <div className='flex w-full mt-12 ml-auto flex-row-reverse'>
                             <Button variant="contained" className={classes.createButton}>创建</Button>
                         </div>
@@ -75,4 +64,4 @@ const CreateTaskModal: React.FC<TaskModalProps> = ({isOpen, handleClose}) => {
     );
 };
 
-export default CreateTaskModal;
+export default CreateProjectModal;

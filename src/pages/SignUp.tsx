@@ -1,13 +1,8 @@
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import {useNavigate} from "react-router-dom";
 
 export default function SignIn() {
     const handleSubmit = (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
@@ -18,12 +13,6 @@ export default function SignIn() {
             password: data.get("password"),
         });
     };
-
-    const navigate = useNavigate();
-
-    function handleRegister() {
-        navigate("/register");
-    }
 
     return (
         <div className="h-full w-full bg-gray-50">
@@ -42,9 +31,19 @@ export default function SignIn() {
                     }}
                 >
                     <Typography component="h1" variant="h5">
-                        登录
+                        注册
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="username"
+                            label="用户名"
+                            name="username"
+                            autoComplete="username"
+                            autoFocus
+                        />
                         <TextField
                             margin="normal"
                             required
@@ -59,15 +58,20 @@ export default function SignIn() {
                             margin="normal"
                             required
                             fullWidth
-                            name="password"
+                            name="password1"
                             label="密码"
+                            autoComplete="new-password"
                             type="password"
-                            id="password"
-                            autoComplete="current-password"
+                            id="password1"
                         />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"/>}
-                            label="记住我"
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password2"
+                            label="确认密码"
+                            type="password"
+                            id="password2"
                         />
                         <Button
                             type="submit"
@@ -75,20 +79,8 @@ export default function SignIn() {
                             variant="contained"
                             sx={{mt: 3, mb: 2}}
                         >
-                            登录
+                            注册
                         </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    忘记密码?
-                                </Link>
-                            </Grid>
-                            <Grid item>
-                                <Link href="#" variant="body2" onClick={handleRegister}>
-                                    {"注册账号"}
-                                </Link>
-                            </Grid>
-                        </Grid>
                     </Box>
                 </Box>
             </Container>
