@@ -1,7 +1,9 @@
-import {Avatar} from "@material-ui/core";
+import {Avatar, InputAdornment} from "@material-ui/core";
 import React from "react";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import TextField from "@mui/material/TextField";
+import IconButton from "@material-ui/core/IconButton";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -68,3 +70,43 @@ export const DateSelector: React.FC<DateSelectorProps> = ({label}) => {
         </form>
     );
 };
+
+interface PasswordTextfieldProps {
+    label: string;
+    name: string;
+    error?: boolean;
+}
+
+export const PasswordTextfield: React.FC<PasswordTextfieldProps> = ({label, name, error = false}) => {
+    const [showPassword, setShowPassword] = React.useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
+
+    return (
+        <TextField
+            margin="normal"
+            required
+            fullWidth
+            type={showPassword ? 'text' : 'password'}
+            label={label}
+            name={name}
+            error={error}
+            InputProps={{
+                endAdornment: (
+                    <InputAdornment position="start">
+                        <IconButton aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    onMouseDown={handleMouseDownPassword}>{showPassword ?
+                            <VisibilityOff/> : <Visibility/>}</IconButton>
+                    </InputAdornment>
+                ),
+            }}
+        />
+    );
+}
+
+export const TimeWait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
