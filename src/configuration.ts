@@ -3,6 +3,7 @@ import * as koa from '@midwayjs/koa';
 import * as validate from '@midwayjs/validate';
 import * as info from '@midwayjs/info';
 import * as typeorm from '@midwayjs/typeorm';
+import * as cors from '@koa/cors';
 import { join } from 'path';
 // import { DefaultErrorFilter } from './filter/default.filter';
 // import { NotFoundFilter } from './filter/notfound.filter';
@@ -27,6 +28,13 @@ export class MainConfiguration {
   async onReady() {
     // add middleware
     this.app.useMiddleware([ReportMiddleware]);
+    this.app.use(
+      cors({
+        credentials: false,
+        allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+        origin: '*',
+      })
+    );
     // add filter
     // this.app.useFilter([NotFoundFilter, DefaultErrorFilter]);
   }
