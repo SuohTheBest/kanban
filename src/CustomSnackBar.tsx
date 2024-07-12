@@ -26,7 +26,7 @@ export const CustomSnackbar: React.FC<SnackbarProps> = ({messageInfo, onClose, i
         <Snackbar
             anchorOrigin={{vertical: 'top', horizontal: 'right'}}
             open={isOpen}
-            autoHideDuration={6000}
+            autoHideDuration={5000}
             onClose={onClose}
             TransitionComponent={SlideTransition}
         >
