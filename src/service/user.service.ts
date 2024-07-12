@@ -14,12 +14,16 @@ export class UserService {
     return await bcrypt.hash(plainPassword, saltRounds);
   }
 
-  async validateUser(username: string, password: string): Promise<boolean> {
+  async getUserId(username: string, password: string): Promise<number> {
     const user = await this.userRepository.findOne({ where: { username } });
     if (!user) {
-      return false;
+      return -1;
     }
-    return await bcrypt.compare(password, user.password);
+    const result = await bcrypt.compare(password, user.password);
+    if (!result) {
+      return -1;
+    }
+    return user.id;
   }
 
   async register(
