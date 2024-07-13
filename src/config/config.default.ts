@@ -20,12 +20,12 @@ export default (appInfo: MidwayAppInfo) => {
           // entities: [join(__dirname, '../entity/*.{ts,js}')],
         },
       },
-      jwt: {
-        secret: 'test123456', // fs.readFileSync('xxxxx.key')
-        sign: {
-          // signOptions
-          expiresIn: '2d', // https://github.com/vercel/ms
-        },
+    },
+    jwt: {
+      secret: 'test123456', // fs.readFileSync('xxxxx.key')
+      sign: {
+        // signOptions
+        expiresIn: '2d', // https://github.com/vercel/ms
       },
     },
   };

@@ -1,5 +1,12 @@
 import { UserService } from '../service/user.service';
-import { Body, Controller, Inject, Post, Provide } from '@midwayjs/core';
+import {
+  Body,
+  Controller,
+  Inject,
+  Options,
+  Post,
+  Provide,
+} from '@midwayjs/core';
 import { JwtService } from '@midwayjs/jwt';
 import { Context } from '@midwayjs/koa';
 
@@ -14,6 +21,18 @@ export class UserController {
 
   @Inject()
   ctx: Context;
+
+  @Options('/*')
+  async optionsHandler() {
+    this.ctx.status = 204;
+    const request_origin = this.ctx.request.headers.origin;
+    this.ctx.set('Access-Control-Allow-Origin', request_origin);
+    this.ctx.set(
+      'Access-Control-Allow-Methods',
+      'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS'
+    );
+    this.ctx.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
 
   @Post('/register')
   async register(
@@ -37,23 +56,41 @@ export class UserController {
       const token = await this.jwtService.sign({ userId });
       this.ctx.cookies.set('token', token, { httpOnly: true }); // 设置 HTTP-only cookie
       return { success: true };
-    } else {
-      return { success: false };
     }
+    return { success: false };
+  }
+
+  @Post('/reset-validate')
+  async reset_validate(@Body() body: { username: string; email: string }) {
+    const { username, email } = body;
+    const userId = await this.userService.getUserIdViaEmail(username, email);
+    if (userId !== -1) {
+      const token = await this.jwtService.sign({ userId });
+      this.ctx.cookies.set('token', token, { httpOnly: true });
+      return { success: true };
+    }
+    return { success: false };
+  }
+
+  @Post('/reset-password')
+  async reset_password(@Body() body: { password: string }) {
+    const { password } = body;
+    const userId = this.ctx.state.user.userId;
+    const result = await this.userService.setNewPassword(userId, password);
+    return { success: result };
   }
 
   @Post('/protected')
   async protected() {
     const token = this.ctx.cookies.get('token');
     if (!token) {
-      return { successful: false, errcode: 401 };
+      return { success: false, errcode: 401 };
     }
-
     try {
       const decoded = await this.jwtService.verify(token);
-      return { successful: true, value: decoded };
+      return { success: true, value: decoded };
     } catch (err) {
-      return { successful: false, errcode: 404 };
+      return { success: false, errcode: 404 };
     }
   }
 }

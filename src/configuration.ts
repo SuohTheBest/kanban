@@ -18,6 +18,7 @@ import { JwtMiddleware } from './middleware/jwt.middleware';
     validate,
     typeorm,
     jwt,
+    cors,
     {
       component: info,
       enabledEnvironment: ['local'],

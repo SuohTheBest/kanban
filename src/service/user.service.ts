@@ -15,7 +15,9 @@ export class UserService {
   }
 
   async getUserId(username: string, password: string): Promise<number> {
-    const user = await this.userRepository.findOne({ where: { username } });
+    const user = await this.userRepository.findOne({
+      where: { username: username },
+    });
     if (!user) {
       return -1;
     }
@@ -24,6 +26,29 @@ export class UserService {
       return -1;
     }
     return user.id;
+  }
+
+  async getUserIdViaEmail(username: string, email: string): Promise<number> {
+    const user = await this.userRepository.findOne({ where: { email: email } });
+    if (!user) {
+      return -1;
+    }
+    return user.username === username ? user.id : -1;
+  }
+
+  async setNewPassword(userid: number, newPassword: string): Promise<boolean> {
+    const user = await this.userRepository.findOneBy({ id: userid });
+    if (!user) {
+      return false;
+    }
+    try {
+      const hashedPassword = await this.hashPassword(newPassword);
+      await this.userRepository.update(user, { password: hashedPassword });
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 
   async register(
