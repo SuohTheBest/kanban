@@ -40,6 +40,10 @@ export default function SignIn() {
         navigate("/register");
     }
 
+    const handleForgotPassword = () => {
+        navigate("/forgot-password");
+    }
+
     const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -72,7 +76,7 @@ export default function SignIn() {
             console.log(response.data);
             if (response.data.success) {
                 info('🎉登录成功', 'success');
-                TimeWait(2000);
+                await TimeWait(2000);
                 navigate('/workspace')
             } else
                 info('用户名或密码错误！', 'error');
@@ -131,7 +135,7 @@ export default function SignIn() {
                         </Box>
                         <Grid container className="pt-2">
                             <Grid item xs>
-                                <Link href="#" variant="body2">
+                                <Link href="#" variant="body2" onClick={handleForgotPassword}>
                                     {"忘记密码?"}
                                 </Link>
                             </Grid>

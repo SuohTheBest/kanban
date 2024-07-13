@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 
-import Sidebar from '../Sidebar.tsx';
-import Swimlane from "../Swimlane.tsx";
-import TopBar from "../TopBar.tsx";
-import Card from "../TodoCard.tsx";
-import ProjectTopBar from "../ProjectTopbar.tsx";
+import Sidebar from '../Sidebar';
+import Swimlane from "../Swimlane";
+import TopBar from "../TopBar";
+import Card from "../TodoCard";
+import ProjectTopBar from "../ProjectTopbar";
 
 const App: React.FC = () => {
     const [isSidebarVisible, setSidebarVisible] = useState<boolean>(true);
@@ -14,7 +14,6 @@ const App: React.FC = () => {
     };
 
     const [sidebarWidth, setSidebarWidth] = useState(250);
-
 
     return (
         <div className="flex-1 flex-col w-full h-full">

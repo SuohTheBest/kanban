@@ -10,10 +10,10 @@ import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined';
 import {Textarea} from "@mui/joy";
-import CommentZone from "./CommentZone.tsx";
-import CommentBox from "./CommentBox.tsx";
+import CommentZone from "./CommentZone";
+import CommentBox from "./CommentBox";
 import Container from "@mui/material/Container";
-import {AvatarWithName, DateYMD} from "./Common.tsx";
+import {AvatarWithName, DateYMD} from "./Common";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

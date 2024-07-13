@@ -3,7 +3,7 @@ import ExpandablePanel from './ExpandablePanel';
 import addButton from "./assets/add_circle.svg";
 import {Paper} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
-import CreateProjectModal from "./CreateProjectModal.tsx";
+import CreateProjectModal from "./CreateProjectModal";
 
 interface SidebarProps {
     width: number;
