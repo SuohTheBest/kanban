@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import {useNavigate} from "react-router-dom";
 import {CustomSnackbar, useCustomSnackbar} from "../CustomSnackBar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {PasswordTextfield, TimeWait} from "../Common";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
@@ -35,6 +35,19 @@ export default function SignIn() {
     const {message, openMessage, info, closeInfo} = useCustomSnackbar();
     const navigate = useNavigate();
     const classes = useStyles();
+    const apiUrl = import.meta.env.VITE_API_URL;
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            const response = await axios.get(`${apiUrl}/user/verifyToken`);
+            if (response.data.success) {
+                const username = response.data.value;
+                navigate('/workspace', {state: {username}});
+            }
+        };
+
+        checkLoginStatus();
+    }, [apiUrl, navigate]);
+
 
     const handleRegister = () => {
         navigate("/register");
@@ -70,7 +83,6 @@ export default function SignIn() {
             return;
         }
         setErrors(newErrors);
-        const apiUrl = import.meta.env.VITE_API_URL;
         try {
             const response = await axios.post(`${apiUrl}/user/login`, {username: val.username, password: val.password});
             console.log(response.data);

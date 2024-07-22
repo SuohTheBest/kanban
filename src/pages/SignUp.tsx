@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from 'axios';
 import {PasswordTextfield, TimeWait} from "../Common";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
@@ -32,6 +32,19 @@ export default function SignIn() {
 
     const {message, openMessage, info, closeInfo} = useCustomSnackbar();
     const navigate = useNavigate();
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            const response = await axios.get(`${apiUrl}/user/verifyToken`);
+            if (response.data.success) {
+                const username = response.data.value;
+                navigate('/workspace', {state: {username}});
+            }
+        };
+
+        checkLoginStatus();
+    }, [apiUrl, navigate]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -84,7 +97,7 @@ export default function SignIn() {
             return;
         }
         setErrors(newErrors);
-        const apiUrl = import.meta.env.VITE_API_URL;
+
         try {
             //console.log(`${apiUrl}/user/register`)
             const response = await axios.post(`${apiUrl}/user/register`, {

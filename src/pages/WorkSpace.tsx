@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import Sidebar from '../Sidebar';
 import Swimlane from "../Swimlane";
 import TopBar from "../TopBar";
 import Card from "../TodoCard";
 import ProjectTopBar from "../ProjectTopbar";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const App: React.FC = () => {
     const [isSidebarVisible, setSidebarVisible] = useState<boolean>(true);
@@ -15,9 +16,20 @@ const App: React.FC = () => {
 
     const [sidebarWidth, setSidebarWidth] = useState(250);
 
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const username = location.state?.username;
+
+    useEffect(() => {
+        if (!username) {
+            navigate('/login');
+        }
+    }, [username, navigate]);
+
     return (
         <div className="flex-1 flex-col w-full h-full">
-            <TopBar toggleSidebar={toggleSidebar}/>
+            <TopBar username={username} toggleSidebar={toggleSidebar}/>
             <div className="flex w-full h-full">
                 {isSidebarVisible && <Sidebar width={sidebarWidth} setWidth={setSidebarWidth}/>}
                 <div className="flex flex-col pt-16 w-full h-full bg-[#e9f2ff]"
