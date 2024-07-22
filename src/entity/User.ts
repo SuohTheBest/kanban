@@ -13,4 +13,7 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+
+  @Column({ nullable: true })
+  login_time: number;
 }

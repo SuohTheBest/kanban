@@ -2,6 +2,7 @@ import { UserService } from '../service/user.service';
 import {
   Body,
   Controller,
+  Get,
   Inject,
   Options,
   Post,
@@ -9,6 +10,8 @@ import {
 } from '@midwayjs/core';
 import { JwtService } from '@midwayjs/jwt';
 import { Context } from '@midwayjs/koa';
+import { User } from '../entity/User';
+import { JwtPayload } from '../interface';
 
 @Provide()
 @Controller('/user')
@@ -21,6 +24,14 @@ export class UserController {
 
   @Inject()
   ctx: Context;
+
+  async setUserToken(user: User) {
+    const user_id = user.id;
+    const login_time = Date.now();
+    const token = await this.jwtService.sign({ user_id, login_time });
+    await this.userService.updateLoginTime(user.id, login_time);
+    this.ctx.cookies.set('token', token, { httpOnly: true }); // 设置 HTTP-only cookie
+  }
 
   @Options('/*')
   async optionsHandler() {
@@ -51,46 +62,77 @@ export class UserController {
   @Post('/login')
   async login(@Body() body: { username: string; password: string }) {
     const { username, password } = body;
-    const userId = await this.userService.getUserId(username, password);
-    if (userId !== -1) {
-      const token = await this.jwtService.sign({ userId });
-      this.ctx.cookies.set('token', token, { httpOnly: true }); // 设置 HTTP-only cookie
-      return { success: true };
+    try {
+      const user = await this.userService.getUserByPassword(
+        username,
+        password
+      );
+      await this.setUserToken(user);
+      return { success: true, value: user.username };
+    } catch (error) {
+      return { success: false, message: error.message };
     }
-    return { success: false };
   }
 
   @Post('/reset-validate')
   async reset_validate(@Body() body: { username: string; email: string }) {
     const { username, email } = body;
-    const userId = await this.userService.getUserIdViaEmail(username, email);
-    if (userId !== -1) {
-      const token = await this.jwtService.sign({ userId });
-      this.ctx.cookies.set('token', token, { httpOnly: true });
+    try {
+      const user = await this.userService.getUserByEmail(username, email);
+      await this.setUserToken(user);
       return { success: true };
+    } catch (error) {
+      return { success: false, message: error.message };
     }
-    return { success: false };
   }
 
   @Post('/reset-password')
   async reset_password(@Body() body: { password: string }) {
     const { password } = body;
-    const userId = this.ctx.state.user.userId;
-    const result = await this.userService.setNewPassword(userId, password);
-    return { success: result };
+    try {
+      const user = this.ctx.state.user;
+      await this.userService.updatePassword(user.id, password);
+      return { success: true };
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: error.message };
+    }
   }
 
-  @Post('/protected')
-  async protected() {
+  @Get('/verifyToken')
+  async verifyToken() {
     const token = this.ctx.cookies.get('token');
     if (!token) {
-      return { success: false, errcode: 401 };
+      return { success: false, message: 'No token provided.' };
     }
     try {
-      const decoded = await this.jwtService.verify(token);
-      return { success: true, value: decoded };
+      // const temp = await this.jwtService.verify(token);
+      // console.log(temp);
+      const userToken = (await this.jwtService.verify(
+        token
+      )) as unknown as JwtPayload;
+      const user_id = userToken.user_id;
+      const user = await this.userService.getUserById(user_id);
+      // console.log(user);
+      if (user.login_time !== userToken.login_time) {
+        return { success: false, message: 'Invalid token.' };
+      }
+      return { success: true, value: user.username };
     } catch (err) {
-      return { success: false, errcode: 404 };
+      console.log(err);
+      return { success: false, message: 'Invalid token' };
+    }
+  }
+
+  @Get('/logout')
+  async logout() {
+    try {
+      const user = this.ctx.state.user;
+      await this.userService.updateLoginTime(user.id, null);
+      return { success: true };
+    } catch (err) {
+      console.log(err);
+      return { success: false };
     }
   }
 }

@@ -1,6 +1,6 @@
-/**
- * @description User-Service parameters
- */
-export interface IUserOptions {
-  uid: number;
+export interface JwtPayload {
+  user_id: number;
+  login_time: number;
+  iat: number;
+  exp: number;
 }

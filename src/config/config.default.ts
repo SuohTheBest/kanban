@@ -1,6 +1,8 @@
 import { MidwayAppInfo } from '@midwayjs/core';
 import { join } from 'path';
 import { User } from '../entity/User';
+import { Project } from '../entity/Project';
+import { Task } from '../entity/Task';
 
 export default (appInfo: MidwayAppInfo) => {
   return {
@@ -14,9 +16,9 @@ export default (appInfo: MidwayAppInfo) => {
         default: {
           type: 'sqlite',
           database: join(__dirname, '../../database.sqlite'),
-          synchronize: true,
-          entities: [User],
-          logging: ['info', 'warn', 'error'],
+          synchronize: false,
+          entities: [User, Task, Project],
+          logging: true,
           // entities: [join(__dirname, '../entity/*.{ts,js}')],
         },
       },
