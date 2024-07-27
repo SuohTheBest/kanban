@@ -11,7 +11,7 @@ import {useNavigate} from "react-router-dom";
 import {CustomSnackbar, useCustomSnackbar} from "../CustomSnackBar";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {PasswordTextfield, TimeWait} from "../Common";
+import {apiUrl, PasswordTextfield, TimeWait} from "../Common";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() =>
@@ -35,7 +35,6 @@ export default function SignIn() {
     const {message, openMessage, info, closeInfo} = useCustomSnackbar();
     const navigate = useNavigate();
     const classes = useStyles();
-    const apiUrl = import.meta.env.VITE_API_URL;
     useEffect(() => {
         const checkLoginStatus = async () => {
             const response = await axios.get(`${apiUrl}/user/verifyToken`);
@@ -85,11 +84,11 @@ export default function SignIn() {
         setErrors(newErrors);
         try {
             const response = await axios.post(`${apiUrl}/user/login`, {username: val.username, password: val.password});
-            console.log(response.data);
             if (response.data.success) {
                 info('🎉登录成功', 'success');
                 await TimeWait(2000);
-                navigate('/workspace')
+                const username = response.data.value;
+                navigate('/workspace', {state: {username}});
             } else
                 info('用户名或密码错误！', 'error');
         } catch (error) {

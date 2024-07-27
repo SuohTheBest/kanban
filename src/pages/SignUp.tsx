@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import React, {useEffect, useState} from "react";
 import axios from 'axios';
-import {PasswordTextfield, TimeWait} from "../Common";
+import {apiUrl, PasswordTextfield, TimeWait} from "../Common";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
 import {CustomSnackbar, useCustomSnackbar} from "../CustomSnackBar";
 import {useNavigate} from "react-router-dom";
@@ -32,7 +32,6 @@ export default function SignIn() {
 
     const {message, openMessage, info, closeInfo} = useCustomSnackbar();
     const navigate = useNavigate();
-    const apiUrl = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         const checkLoginStatus = async () => {

@@ -1,32 +1,45 @@
 import React from "react";
-import {ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
+import {ListItem} from "@mui/material";
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@mui/icons-material/NavigateNextOutlined';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import List from '@material-ui/core/List';
-import {StarBorder} from "@mui/icons-material";
+import {Task} from "./interfaces";
+import {TaskListItem} from "./TaskListItem";
 
-const ExpandablePanel = () => {
-    const [isopen, setIsopen] = React.useState(true);
+interface ExpandablePanelProps {
+    title: string;
+    fetchData: () => Promise<void>;
+    info: (message: string, type: ("error" | "success")) => void;
+    items?: Task[];
+}
 
+const ExpandablePanel: React.FC<ExpandablePanelProps> = ({title, fetchData, info, items = []}) => {
+    const [isOpen, setIsOpen] = React.useState(true);
+    const [selectedIndex, setSelectedIndex] = React.useState(-1);
     const handleClick = () => {
-        setIsopen(!isopen);
+        setIsOpen(!isOpen);
     };
 
     return (
         <List>
-            <ListItem button onClick={handleClick}>
-                {isopen ? <ExpandMore htmlColor='gray'/> : <ExpandLess htmlColor='gray'/>}
-                <h2 className="text-sm text-gray-500">最近</h2>
+            <ListItem onClick={handleClick}>
+                {isOpen ? <ExpandMore htmlColor='gray'/> : <ExpandLess htmlColor='gray'/>}
+                <h2 className="text-sm text-gray-500">{title}</h2>
             </ListItem>
-            <Collapse in={isopen} timeout="auto" unmountOnExit>
+            <Collapse in={isOpen} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                    <ListItem button className="pl-4">
-                        <ListItemIcon>
-                            <StarBorder/>
-                        </ListItemIcon>
-                        <ListItemText primary="Starred"/>
-                    </ListItem>
+                    {items.map((item) => (
+                        <TaskListItem name={item.name}
+                                      data-userid={item.user_id}
+                                      key={item.id}
+                                      index={item.id}
+                                      selectedIndex={selectedIndex}
+                                      setSelectedIndex={setSelectedIndex}
+                                      fetchData={fetchData}
+                                      info={info}
+                        />
+                    ))}
                 </List>
             </Collapse>
         </List>

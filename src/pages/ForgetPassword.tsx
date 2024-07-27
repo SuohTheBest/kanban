@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom";
 import {CustomSnackbar, useCustomSnackbar} from "../CustomSnackBar";
 import {useState} from "react";
 import axios from "axios";
-import {PasswordTextfield, TimeWait} from "../Common";
+import {apiUrl, PasswordTextfield, TimeWait} from "../Common";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() =>
@@ -62,7 +62,6 @@ export default function ForgetPassword() {
             return;
         }
         setErrors(newErrors);
-        const apiUrl = import.meta.env.VITE_API_URL;
         try {
             const response = await axios.post(`${apiUrl}/user/reset-validate`, {
                 username: val.field1,

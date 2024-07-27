@@ -5,6 +5,8 @@ import TextField from "@mui/material/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 
+export const apiUrl = import.meta.env.VITE_API_URL;
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         small: {

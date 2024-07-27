@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import DateIcon from './assets/date.svg';
 import MdLabel from './assets/label.svg';
-import TaskModal from "./TaskModal.tsx";
+import TaskModal from "./TaskModal";
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 import IconButton from "@material-ui/core/IconButton";
 
