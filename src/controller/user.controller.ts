@@ -63,10 +63,7 @@ export class UserController {
   async login(@Body() body: { username: string; password: string }) {
     const { username, password } = body;
     try {
-      const user = await this.userService.getUserByPassword(
-        username,
-        password
-      );
+      const user = await this.userService.getUserByPassword(username, password);
       await this.setUserToken(user);
       return { success: true, value: user.username };
     } catch (error) {
@@ -106,14 +103,11 @@ export class UserController {
       return { success: false, message: 'No token provided.' };
     }
     try {
-      // const temp = await this.jwtService.verify(token);
-      // console.log(temp);
       const userToken = (await this.jwtService.verify(
         token
       )) as unknown as JwtPayload;
       const user_id = userToken.user_id;
       const user = await this.userService.getUserById(user_id);
-      // console.log(user);
       if (user.login_time !== userToken.login_time) {
         return { success: false, message: 'Invalid token.' };
       }

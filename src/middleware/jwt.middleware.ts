@@ -36,9 +36,7 @@ export class JwtMiddleware {
         const decoded_token = (await this.jwtService.verify(
           token
         )) as unknown as JwtPayload;
-        console.log(decoded_token);
         const user = await this.userService.getUserById(decoded_token.user_id);
-        console.log(user);
         if (decoded_token.login_time !== user.login_time) {
           ctx.status = 401;
           ctx.body = { message: 'Old Token.' };

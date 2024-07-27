@@ -16,7 +16,7 @@ export default (appInfo: MidwayAppInfo) => {
         default: {
           type: 'sqlite',
           database: join(__dirname, '../../database.sqlite'),
-          synchronize: false,
+          synchronize: true,
           entities: [User, Task, Project],
           logging: true,
           // entities: [join(__dirname, '../entity/*.{ts,js}')],

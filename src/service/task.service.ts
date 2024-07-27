@@ -8,7 +8,7 @@ export class TaskService {
   @InjectEntityModel(Task)
   taskRepository: Repository<Task>;
 
-  async getTaskById(user_id: number): Promise<Task[]> {
+  async getTaskByUserId(user_id: number): Promise<Task[]> {
     return this.taskRepository.find({ where: { user_id: user_id } });
   }
 
@@ -17,5 +17,19 @@ export class TaskService {
     newTask.user_id = user_id;
     newTask.name = name;
     return await this.taskRepository.save(newTask);
+  }
+
+  async deleteTask(task_id: number): Promise<void> {
+    const task = await this.taskRepository.findOneBy({ id: task_id });
+    await this.taskRepository.remove(task);
+  }
+
+  async checkTaskValid(user_id: number, task_id: number): Promise<boolean> {
+    try {
+      const task = await this.taskRepository.findOneBy({ id: task_id });
+      return !(!task || task.user_id !== user_id);
+    } catch (err) {
+      return false;
+    }
   }
 }
