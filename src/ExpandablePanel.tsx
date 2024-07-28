@@ -10,13 +10,21 @@ import {TaskListItem} from "./TaskListItem";
 interface ExpandablePanelProps {
     title: string;
     fetchData: () => Promise<void>;
+    selectedIndex: number;
+    setSelectedIndex: (index: number) => void;
     info: (message: string, type: ("error" | "success")) => void;
     items?: Task[];
 }
 
-const ExpandablePanel: React.FC<ExpandablePanelProps> = ({title, fetchData, info, items = []}) => {
+const ExpandablePanel: React.FC<ExpandablePanelProps> = ({
+                                                             title,
+                                                             fetchData,
+                                                             selectedIndex,
+                                                             setSelectedIndex,
+                                                             info,
+                                                             items = []
+                                                         }) => {
     const [isOpen, setIsOpen] = React.useState(true);
-    const [selectedIndex, setSelectedIndex] = React.useState(-1);
     const handleClick = () => {
         setIsOpen(!isOpen);
     };

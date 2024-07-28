@@ -1,12 +1,13 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Button from "@material-ui/core/Button";
 import {Paper} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import CreateTaskModal from "./CreateTaskModal.tsx";
 
 interface SwimlaneProps {
     hasCreate: boolean;
     title: string;
+    disabled?: boolean;
+    setModelOpen?: (open: boolean) => void;
     children?: React.ReactNode;
 }
 
@@ -16,11 +17,11 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-const Swimlane: React.FC<SwimlaneProps> = ({hasCreate, title, children}) => {
+const Swimlane: React.FC<SwimlaneProps> = ({
+                                               hasCreate, title, disabled = false, setModelOpen = () => {
+    }, children
+                                           }) => {
     const classes = useStyles();
-    const [isOpen, setOpen] = useState(false);
-
-    const handleClose = () => setOpen(false);
 
     const hasChildren = React.Children.count(children) > 0;
     return (
@@ -37,13 +38,13 @@ const Swimlane: React.FC<SwimlaneProps> = ({hasCreate, title, children}) => {
                         {children}
                     </div>
                 )}
-                {hasCreate && <Button onClick={() => {
-                    setOpen(true)
-                }}>
-                    <h2 className="text-blue-500 hover:text-blue-700">+ 创建</h2>
+                {hasCreate && <Button color="primary" variant={"outlined"} disabled={disabled} onClick={() => {
+                    setModelOpen(true)
+                }}
+                >
+                    + 创建
                 </Button>}
             </Paper>
-            {isOpen && <CreateTaskModal isOpen={isOpen} handleClose={handleClose}/>}
         </div>
 
     );

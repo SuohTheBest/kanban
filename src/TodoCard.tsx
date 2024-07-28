@@ -7,11 +7,14 @@ import IconButton from "@material-ui/core/IconButton";
 
 interface CardProps {
     title: string;
-    date: string;
-    label: string;
+    creator: string;
+    create_date: string;
+    start_date: string;
+    end_date: string;
+    description: string;
 }
 
-const Card: React.FC<CardProps> = ({title, date, label}) => {
+const Card: React.FC<CardProps> = ({title, creator, create_date, start_date, end_date, description}) => {
     const [Open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
 
@@ -33,20 +36,22 @@ const Card: React.FC<CardProps> = ({title, date, label}) => {
                     <h3 className="text-lg font-bold py-1">{title}</h3>
                     <div className="hidden group-hover:block">
                         <IconButton size='small'
-                                     onClick={btn_more_click}><MoreHorizOutlinedIcon/>
+                                    onClick={btn_more_click}><MoreHorizOutlinedIcon/>
                         </IconButton>
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">
                     <img src={DateIcon} alt="Date"/>
-                    <span className="text-gray-600">{date}</span>
+                    <span className="text-gray-600">{create_date}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                     <img src={MdLabel} alt="Label"/>
-                    <span className="text-blue-500">{label}</span>
+                    <span className="text-blue-500">{creator}</span>
                 </div>
             </div>
-            <TaskModal isOpen={Open} handleClose={handleClose}/>
+            <TaskModal title={title} creator={creator} create_date={create_date} start_date={start_date} end_date={end_date}
+                       description={description} isOpen={Open}
+                       handleClose={handleClose}/>
         </>
     );
 };

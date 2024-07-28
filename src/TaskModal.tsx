@@ -30,15 +30,37 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface TaskModalProps {
+    title: string;
+    creator: string;
+    create_date: string;
+    // modify_time: number;
+    start_date: string;
+    end_date: string;
+    description: string;
     isOpen: boolean;
     handleClose: () => void;
 }
 
-
-const TaskModal: React.FC<TaskModalProps> = ({isOpen, handleClose}) => {
+const TaskModal: React.FC<TaskModalProps> = ({
+                                                 title,
+                                                 creator,
+                                                 create_date,
+                                                 start_date,
+                                                 end_date,
+                                                 description,
+                                                 isOpen,
+                                                 handleClose
+                                             }) => {
     const classes = useStyles();
-
     const [FoldDetail, setFoldDetail] = React.useState(false);
+
+    const o_currDate = new Date();
+    const o_createDate = new Date(create_date);
+    const o_startDate = new Date(start_date);
+    const o_endDate = new Date(end_date);
+
+    const timeDifference = o_currDate.getTime() - o_createDate.getTime();
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
     const toggleFoldDetail = () => {
         setFoldDetail(!FoldDetail);
@@ -59,7 +81,7 @@ const TaskModal: React.FC<TaskModalProps> = ({isOpen, handleClose}) => {
                 <div className='w-[100vh]'>
                     <Container fixed className="flex flex-col px-4 pb-10 pt-8 bg-white">
                         <div className="flex items-center ml-5 mb-2 justify-between">
-                            <h1 className="font-semibold text-2xl"> title </h1>
+                            <h1 className="font-semibold text-2xl"> {title} </h1>
                             <IconButton className="rounded" onClick={handleClose}> <CloseOutlinedIcon/> </IconButton>
                         </div>
                         <div className="flex">
@@ -89,9 +111,8 @@ const TaskModal: React.FC<TaskModalProps> = ({isOpen, handleClose}) => {
                                     placeholder="编辑描述"
                                     variant="plain"
                                     maxRows={4}
-                                >
-                                    12334444
-                                </Textarea>
+                                    value={description}
+                                />
                                 <h2 className="pt-5 font-semibold">活动</h2>
                                 <CommentZone imgLink='broken'>
                                     <CommentBox imgLink='broken' userName='stb'
@@ -123,24 +144,27 @@ const TaskModal: React.FC<TaskModalProps> = ({isOpen, handleClose}) => {
                                             <div className='p-3'>
                                                 <div className='flex py-3 items-center justify-between'>
                                                     <h3 className='text-sm '>发起人</h3>
-                                                    <AvatarWithName src='broken' name='name'/>
+                                                    <AvatarWithName src='broken' name={creator}/>
                                                 </div>
                                                 <div className='flex py-3 items-center justify-between'>
                                                     <h3 className='text-sm py-3'>开始日期</h3>
-                                                    <DateYMD year={2024} month={12} day={12}/>
+                                                    <DateYMD year={o_startDate.getFullYear()}
+                                                             month={o_startDate.getMonth() + 1}
+                                                             day={o_startDate.getDate()}/>
                                                 </div>
                                                 <div className='flex py-3 items-center justify-between'>
                                                     <h3 className='text-sm py-3'>截止日期</h3>
-                                                    <DateYMD year={2024} month={12} day={12}/>
+                                                    <DateYMD year={o_endDate.getFullYear()}
+                                                             month={o_startDate.getMonth() + 1}
+                                                             day={o_startDate.getDate()}/>
                                                 </div>
                                             </div>
-
                                         </>
                                     }
                                 </div>
                                 <div className='pt-8 text-sm pl-3 text-gray-500'>
-                                    <p>已创建 4天前</p>
-                                    <p>更新日期 4天前</p>
+                                    <p>已创建 {daysDifference}天前</p>
+                                    {/*<p>更新日期 {modify_time}天前</p>*/}
                                 </div>
                             </Container>
                         </div>

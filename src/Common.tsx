@@ -1,5 +1,5 @@
 import {Avatar, InputAdornment} from "@material-ui/core";
-import React from "react";
+import React, {ChangeEventHandler} from "react";
 import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 import TextField from "@mui/material/TextField";
 import IconButton from "@material-ui/core/IconButton";
@@ -24,12 +24,10 @@ interface AvatarWithNameProps {
 export const AvatarWithName: React.FC<AvatarWithNameProps> = ({src, name}) => {
     const classes = useStyles();
     return (
-
         <div className='flex'>
             <Avatar src={src} className={classes.small}/>
-            <h4 className="ml-2 text-base text-gray-600">{name}</h4>
+            <h4 className="ml-2 text-gray-600">{name}</h4>
         </div>
-
     );
 };
 
@@ -45,7 +43,7 @@ export const DateYMD: React.FC<DateYMDProps> = ({year, month, day}) => {
     );
 };
 
-function getDate() {
+export function getDate() {
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需要+1
@@ -55,9 +53,10 @@ function getDate() {
 
 interface DateSelectorProps {
     label: string;
+    onChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 }
 
-export const DateSelector: React.FC<DateSelectorProps> = ({label}) => {
+export const DateSelector: React.FC<DateSelectorProps> = ({label, onChange}) => {
     return (
         <form className='flex flex-wrap' noValidate>
             <TextField
@@ -68,6 +67,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({label}) => {
                 InputLabelProps={{
                     shrink: true,
                 }}
+                onChange={onChange}
             />
         </form>
     );

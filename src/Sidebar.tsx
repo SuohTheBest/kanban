@@ -3,7 +3,7 @@ import ExpandablePanel from './ExpandablePanel';
 import addButton from "./assets/add_circle.svg";
 import {Paper} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
-import CreateProjectModal from "./CreateProjectModal";
+import CreateTaskModal from "./CreateTaskModal";
 import axios from "axios";
 import {apiUrl} from "./Common";
 import {Task} from "./interfaces";
@@ -11,11 +11,12 @@ import {Task} from "./interfaces";
 interface SidebarProps {
     width: number;
     setWidth: (width: number) => void;
+    selectedIndex: number;
+    setSelectedIndex: (index: number) => void;
     info: (message: string, type: ("error" | "success")) => void;
 }
 
-
-const Sidebar: React.FC<SidebarProps> = ({width, setWidth, info}) => {
+const Sidebar: React.FC<SidebarProps> = ({width, setWidth, selectedIndex, setSelectedIndex, info}) => {
     const handleMouseDown = (e: React.MouseEvent) => {
         const startX = e.clientX;
         const startWidth = width;
@@ -37,6 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({width, setWidth, info}) => {
 
     const [isOpen, setOpen] = useState(false);
     const [taskList, setTaskList] = useState<Task[]>([]);
+
 
     function handleClose() {
         setOpen(false);
@@ -73,7 +75,8 @@ const Sidebar: React.FC<SidebarProps> = ({width, setWidth, info}) => {
                                 <img src={addButton} alt="Add" className="w-6 h-6"/>
                             </IconButton>
                         </div>
-                        <ExpandablePanel title={"最近"} items={taskList} fetchData={fetchData} info={info}/>
+                        <ExpandablePanel title={"最近"} items={taskList} fetchData={fetchData} info={info}
+                                         selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex}/>
                     </div>
                 </div>
                 <div
@@ -81,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({width, setWidth, info}) => {
                     className="justify-end top-0 w-1 h-full cursor-ew-resize bg-gray-200 hover:bg-sky-500"
                 />
             </div>
-            <CreateProjectModal isOpen={isOpen} handleClose={handleClose} fetchData={fetchData} info={info}/>
+            <CreateTaskModal isOpen={isOpen} handleClose={handleClose} fetchData={fetchData} info={info}/>
         </Paper>
     );
 }

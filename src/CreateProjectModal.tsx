@@ -7,9 +7,10 @@ import Container from "@mui/material/Container";
 import IconButton from "@material-ui/core/IconButton";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import {Textarea} from "@mui/joy";
+import {apiUrl, DateSelector, getDate, TimeWait} from "./Common";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
-import {apiUrl, TimeWait} from "./Common";
+import {useLocation} from "react-router-dom";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -28,30 +29,64 @@ const useStyles = makeStyles(() =>
     }),
 );
 
-interface ProjectProps {
+interface ProjectModalProps {
     isOpen: boolean;
-    handleClose: () => void;
+    task_id: number;
     info: (message: string, type: ("error" | "success")) => void;
-    fetchData: () => Promise<void>;
+    handleClose: () => void;
+    fetchProjectData: () => Promise<void>;
 }
 
-const CreateProjectModal: React.FC<ProjectProps> = ({isOpen, handleClose, info, fetchData}) => {
+const CreateProjectModal: React.FC<ProjectModalProps> = ({isOpen, task_id, info, handleClose, fetchProjectData}) => {
     const classes = useStyles();
-    const [taskName, setTaskName] = useState('');
+    const location = useLocation();
 
-    async function handleSubmitTask() {
-        const str = taskName;
-        if (str === '') {
-            info("项目名称不能为空!", "error");
+    const currDate = getDate();
+    const [subject, setSubject] = useState('');
+    const [startDate, setStartDate] = useState(currDate);
+    const [endDate, setEndDate] = useState(currDate);
+    const [description, setDescription] = useState('');
+
+    const username = location.state?.username;
+
+    async function handleSubmit() {
+        if (subject === '' || startDate === '' || endDate === '') {
+            info("还有必填项没有填写!", "error");
             return;
         }
-        const response = await axios.post(`${apiUrl}/task`, {name: str});
-        if (response.data.success) {
-            info("🎉添加成功", 'success');
-            await fetchData();
-            await TimeWait(750);
-            handleClose();
-        } else {
+        const o_startDate = new Date(startDate);
+        const o_endDate = new Date(endDate);
+        const o_currDate = new Date(currDate);
+        if (o_startDate > o_endDate) {
+            info("截止日期不能早于开始日期!", "error");
+            return;
+        }
+        let type;
+        if (o_endDate < o_currDate) type = 3;//已完成
+        else if (o_startDate > o_currDate) type = 1;//待办
+        else type = 2;
+
+        try {
+            const response = await axios.post(`${apiUrl}/project`, {
+                subject: subject,
+                creator: username,
+                create_date: currDate,
+                start_date: startDate,
+                end_date: endDate,
+                description: description,
+                type: type,
+                task_id: task_id,
+            });
+            if (response.data.success) {
+                info("🎉添加成功", 'success');
+                await fetchProjectData();
+                await TimeWait(750);
+                handleClose();
+            } else {
+                info("添加失败，请稍后重试", "error");
+            }
+        } catch (err) {
+            console.log(err);
             info("添加失败，请稍后重试", "error");
         }
     }
@@ -69,22 +104,32 @@ const CreateProjectModal: React.FC<ProjectProps> = ({isOpen, handleClose, info, 
                 <div className='w-[60vh]'>
                     <Container fixed className="flex flex-col px-4 pb-10 pt-8 bg-white">
                         <div className="flex items-center ml-5 mb-2 justify-between">
-                            <h1 className="font-semibold text-2xl"> 创建项目 </h1>
-                            <IconButton className="rounded" onClick={handleClose}> <CloseOutlinedIcon/>
-                            </IconButton>
+                            <h1 className="font-semibold text-2xl"> 创建任务 </h1>
+                            <IconButton className="rounded" onClick={handleClose}> <CloseOutlinedIcon/> </IconButton>
                         </div>
                         <div className="flex flex-col mt-5 ml-5 mb-2">
-                            <h2 className="font-semibold mr-4 pb-5"> 名称 </h2>
-                            <Textarea placeholder="团队名称、项目名称、里程碑......"
-                                      maxRows={2}
+                            <h2 className="font-semibold mr-4 pb-5"> 主题 </h2>
+                            <Textarea placeholder="需要做什么？" maxRows={2}
                                       onChange={(event) => {
-                                          setTaskName(event.target.value);
-                                      }}>
-                            </Textarea>
+                                          setSubject(event.target.value);
+                                      }}/>
                         </div>
+                        <div className="flex items-center mt-5 ml-5 mb-2 justify-between">
+                            <h2 className="font-semibold mr-4"> 开始日期 </h2>
+                            <DateSelector label='开始日期' onChange={(date) => setStartDate(date.target.value)}/>
+                        </div>
+                        <div className="flex items-center mt-5 ml-5 mb-2 justify-between">
+                            <h2 className="font-semibold mr-4"> 截止日期 </h2>
+                            <DateSelector label='开始日期' onChange={(date) => setEndDate(date.target.value)}/>
+                        </div>
+                        <h2 className="mt-5 ml-5 mb-2 font-semibold  mr-4"> 描述 (可选) </h2>
+                        <Textarea className="ml-5 mt-5" placeholder="添加描述" maxRows={4}
+                                  onChange={(event) => {
+                                      setDescription(event.target.value);
+                                  }}/>
                         <div className='flex w-full mt-12 ml-auto flex-row-reverse'>
                             <Button variant="contained" className={classes.createButton}
-                                    onClick={handleSubmitTask}>创建</Button>
+                                    onClick={handleSubmit}>创建</Button>
                         </div>
                     </Container>
                 </div>
