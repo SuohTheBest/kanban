@@ -6,15 +6,21 @@ export class Project {
   id: number;
 
   @Column()
-  name: string;
-
-  @Column({ type: 'date' })
-  start_date: Date;
-
-  @Column({ type: 'date' })
-  end_date: Date;
+  subject: string;
 
   @Column()
+  creator: string;
+
+  @Column()
+  create_date: string;
+
+  @Column()
+  start_date: string;
+
+  @Column()
+  end_date: string;
+
+  @Column({ nullable: true })
   description: string;
 
   @Column()

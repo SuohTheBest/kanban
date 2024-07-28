@@ -2,6 +2,7 @@ import { Provide } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Project } from '../entity/Project';
 import { Repository } from 'typeorm';
+import { ProjectData } from '../interface';
 
 @Provide()
 export class ProjectService {
@@ -12,21 +13,8 @@ export class ProjectService {
     return this.projectRepository.find({ where: { task_id: task_id } });
   }
 
-  async addProject(
-    name: string,
-    start_date: Date,
-    end_date: Date,
-    description: string,
-    type: number,
-    task_id: number
-  ): Promise<Project> {
-    const newProject = new Project();
-    newProject.name = name;
-    newProject.start_date = start_date;
-    newProject.end_date = end_date;
-    newProject.description = description;
-    newProject.type = type;
-    newProject.task_id = task_id;
+  async addProject(project_data: ProjectData): Promise<Project> {
+    const newProject = this.projectRepository.create(project_data);
     return this.projectRepository.save(newProject);
   }
 

@@ -8,6 +8,12 @@ export class TaskService {
   @InjectEntityModel(Task)
   taskRepository: Repository<Task>;
 
+  async ensureValidTaskId(task_id: number, user_id: number) {
+    if (!(await this.checkTaskValid(user_id, task_id))) {
+      return { success: false };
+    }
+  }
+
   async getTaskByUserId(user_id: number): Promise<Task[]> {
     return this.taskRepository.find({ where: { user_id: user_id } });
   }

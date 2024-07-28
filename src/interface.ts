@@ -4,3 +4,14 @@ export interface JwtPayload {
   iat: number;
   exp: number;
 }
+
+export interface ProjectData {
+  subject: string;
+  creator: string;
+  create_date: string;
+  start_date: string;
+  end_date: string;
+  description: string;
+  type: number;
+  task_id: number;
+}
