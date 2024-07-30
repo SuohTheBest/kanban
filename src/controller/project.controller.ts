@@ -70,7 +70,7 @@ export class ProjectController {
       const file = files[0];
       const project_id = fields.task_id as number;
       const project = await this.projectService.getProjectById(project_id);
-      const user_id = this.ctx.state.user_id;
+      const user_id = this.ctx.state.user.id;
       await this.taskService.ensureValidTaskId(project.task_id, user_id);
       const fileName = file.filename;
       const filePath = file.data;
@@ -115,7 +115,7 @@ export class ProjectController {
   @Del('/upload')
   async deleteFile(@Query('file_id') id: number) {
     try {
-      const user_id = this.ctx.state.user_id;
+      const user_id = this.ctx.state.user.id;
       const file = await this.projectService.getUploadFileById(id);
       const project_id = file.project_id;
       const project = await this.projectService.getProjectById(project_id);
@@ -141,8 +141,9 @@ export class ProjectController {
     @Query('project_id') project_id: number
   ) {
     try {
-      const user_id = this.ctx.state.user_id;
-      await this.taskService.ensureValidTaskId(project_id, user_id);
+      const user_id = this.ctx.state.user.id;
+      const project = await this.projectService.getProjectById(project_id);
+      await this.taskService.ensureValidTaskId(project.task_id, user_id);
       const uploadDir = this.ctx.app.getConfig('upload.baseDir');
       const filePath = join(uploadDir, project_id.toString() + '-' + file_name);
       if (!existsSync(filePath)) {
@@ -155,6 +156,56 @@ export class ProjectController {
     } catch (err) {
       console.log(err);
       this.ctx.status = 500;
+    }
+  }
+
+  @Get('/comment')
+  async getComments(@Query('project_id') project_id: number) {
+    try {
+      const user_id = this.ctx.state.user.id;
+      const project = await this.projectService.getProjectById(project_id);
+      await this.taskService.ensureValidTaskId(project.task_id, user_id);
+      const comments = await this.projectService.getCommentsByProjectId(
+        project_id
+      );
+      return { success: true, value: comments };
+    } catch (err) {
+      console.log(err);
+      return { success: false };
+    }
+  }
+
+  @Post('/comment')
+  async addComment(@Body() body: { message: string; project_id: number }) {
+    try {
+      const username = this.ctx.state.user.username;
+      const { message, project_id } = body;
+      const comment = await this.projectService.addComment(
+        username,
+        message,
+        project_id
+      );
+      return { success: true, value: comment };
+    } catch (err) {
+      console.log(err);
+      return { success: false };
+    }
+  }
+
+  @Del('/comment')
+  async deleteComment(@Query('comment_id') id: number) {
+    try {
+      const user_id = this.ctx.state.user.id;
+      const comment = await this.projectService.getCommentById(id);
+      const project = await this.projectService.getProjectById(
+        comment.project_id
+      );
+      await this.taskService.checkTaskValid(project.task_id, user_id);
+      await this.projectService.deleteCommentById(id);
+      return { success: true };
+    } catch (err) {
+      console.log(err);
+      return { success: false };
     }
   }
 }

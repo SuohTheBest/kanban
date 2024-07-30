@@ -15,7 +15,7 @@ export class ProjectService {
   uploadFileRepository: Repository<UploadFile>;
 
   @InjectEntityModel(Comments)
-  commentRepository: Repository<Comment>;
+  commentRepository: Repository<Comments>;
 
   async getProjectsByTaskId(task_id: number): Promise<Project[]> {
     return this.projectRepository.findBy({ task_id: task_id });
@@ -64,5 +64,32 @@ export class ProjectService {
   async deleteUploadFileById(file_id: number): Promise<void> {
     const uploadFile = await this.getUploadFileById(file_id);
     await this.uploadFileRepository.remove(uploadFile);
+  }
+
+  async addComment(
+    username: string,
+    message: string,
+    project_id: number
+  ): Promise<Comments> {
+    const newComment = this.commentRepository.create({
+      username,
+      message,
+      project_id,
+    });
+    newComment.timestamp = Date.now();
+    return await this.commentRepository.save(newComment);
+  }
+
+  async getCommentById(comment_id: number): Promise<Comments> {
+    return this.commentRepository.findOneBy({ id: comment_id });
+  }
+
+  async getCommentsByProjectId(project_id: number): Promise<Comments[]> {
+    return this.commentRepository.findBy({ project_id: project_id });
+  }
+
+  async deleteCommentById(comment_id: number): Promise<void> {
+    const comment = await this.getCommentById(comment_id);
+    await this.commentRepository.remove(comment);
   }
 }

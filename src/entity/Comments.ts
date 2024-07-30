@@ -6,7 +6,10 @@ export class Comments {
   id: number;
 
   @Column()
-  user_name: string;
+  username: string;
+
+  @Column()
+  message: string;
 
   @Column()
   timestamp: number;

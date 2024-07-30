@@ -10,7 +10,7 @@ export class TaskService {
 
   async ensureValidTaskId(task_id: number, user_id: number) {
     if (!(await this.checkTaskValid(user_id, task_id))) {
-      return { success: false };
+      throw Error('Task id not valid');
     }
   }
 
