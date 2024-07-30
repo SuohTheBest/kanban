@@ -25,6 +25,7 @@ const ExpandablePanel: React.FC<ExpandablePanelProps> = ({
                                                              items = []
                                                          }) => {
     const [isOpen, setIsOpen] = React.useState(true);
+
     const handleClick = () => {
         setIsOpen(!isOpen);
     };

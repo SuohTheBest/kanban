@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {makeStyles, createStyles, Theme} from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -13,7 +13,11 @@ import {Textarea} from "@mui/joy";
 import CommentZone from "./CommentZone";
 import CommentBox from "./CommentBox";
 import Container from "@mui/material/Container";
-import {AvatarWithName, DateYMD} from "./Common";
+import {apiUrl, AvatarWithName, DateYMD, TimeWait} from "./Common";
+import axios from "axios";
+import {UploadFile} from "./interfaces";
+import List from "@mui/material/List";
+import {UploadListItem} from "./UploadListItem";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -39,6 +43,8 @@ interface TaskModalProps {
     description: string;
     isOpen: boolean;
     handleClose: () => void;
+    task_id: number;
+    info: (message: string, type: ("success" | "error")) => void;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -49,11 +55,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                  end_date,
                                                  description,
                                                  isOpen,
-                                                 handleClose
+                                                 handleClose,
+                                                 task_id,
+                                                 info
                                              }) => {
     const classes = useStyles();
     const [FoldDetail, setFoldDetail] = React.useState(false);
-
+    const [uploadFileList, setUploadFileList] = React.useState<UploadFile[]>([]);
     const o_currDate = new Date();
     const o_createDate = new Date(create_date);
     const o_startDate = new Date(start_date);
@@ -65,6 +73,59 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const toggleFoldDetail = () => {
         setFoldDetail(!FoldDetail);
     }
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            await handleFileUpload(event.target.files[0]);
+        }
+    };
+
+    const handleFileUpload = async (file: File) => {
+        if (!file) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('task_id', task_id.toString());
+        try {
+            const response = await axios.post(`${apiUrl}/project/upload`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            console.log(response.data);
+            if (response.data.success) {
+                info("文件上传成功", "success");
+                await TimeWait(750);
+                await fetchUploadFileList();
+            } else {
+                info(response.data.value, "error");
+            }
+        } catch (error) {
+            console.error(error);
+            info("文件上传失败", "error");
+        }
+    };
+
+    const fetchUploadFileList = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}/project/upload`, {params: {'project_id': task_id}});
+            if (response.data.success) {
+                setUploadFileList(response.data.value);
+            } else {
+                info("获取附件失败!", "error");
+            }
+        } catch (err) {
+            console.error(err);
+            info("获取附件失败!", "error");
+        }
+    }
+
+    useEffect(() => {
+        if (!isOpen) return;
+        fetchUploadFileList();
+    }, [isOpen]);
 
     return (
         <Modal
@@ -94,8 +155,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     accept="*"
                                     className='hidden'
                                     id="button-file"
-                                    multiple
                                     type="file"
+                                    onChange={handleFileChange}
                                 />
                                 <label htmlFor='button-file'>
                                     <Button
@@ -113,6 +174,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     maxRows={4}
                                     value={description}
                                 />
+                                {uploadFileList.length > 0 && <div className="overflow-y-auto">
+                                    <h2 className="pt-5 font-semibold pb-2">附件</h2>
+                                    <List sx={{width: '100%'}}>
+                                        {uploadFileList.map((file: UploadFile) => (
+                                            <UploadListItem file_name={file.file_name}
+                                                            file_id={file.id}
+                                                            task_id={task_id}
+                                                            fetchUploadList={fetchUploadFileList}
+                                                            info={info} key={file.id}/>))}
+                                    </List>
+                                </div>}
                                 <h2 className="pt-5 font-semibold">活动</h2>
                                 <CommentZone imgLink='broken'>
                                     <CommentBox imgLink='broken' userName='stb'

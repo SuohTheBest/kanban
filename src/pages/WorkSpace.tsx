@@ -3,13 +3,13 @@ import Sidebar from '../Sidebar';
 import Swimlane from "../Swimlane";
 import TopBar from "../TopBar";
 import Card from "../TodoCard";
-import ProjectTopBar from "../ProjectTopbar";
+import TaskTopBar from "../TaskTopBar";
 import {useLocation, useNavigate} from "react-router-dom";
 import {CustomSnackbar, useCustomSnackbar} from "../CustomSnackBar";
 import axios from "axios";
 import {apiUrl} from "../Common";
-import {Project} from "../interfaces";
-import CreateProjectModal from "../CreateProjectModal";
+import {Project, Task} from "../interfaces";
+import CreateTaskModal from "../CreateTaskModal";
 
 const WorkSpace: React.FC = () => {
     const {message, openMessage, info, closeInfo} = useCustomSnackbar();
@@ -18,6 +18,8 @@ const WorkSpace: React.FC = () => {
     const [sidebarWidth, setSidebarWidth] = useState(250);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [isModelOpen, setIsModelOpen] = useState(false);
+    const [taskList, setTaskList] = useState<Task[]>([]);
+    const [title, setTitle] = useState("");
     const [projects, setProjects] =
         useState<{ type1: Project[], type2: Project[], type3: Project[] }>({
             type1: [],
@@ -33,6 +35,16 @@ const WorkSpace: React.FC = () => {
     const toggleSidebar = () => {
         setSidebarVisible(!isSidebarVisible);
     };
+
+    function getProjectName() {
+        const tasks = taskList.filter((task) => {
+            return task.id === selectedIndex
+        });
+        if (tasks.length > 0) {
+            setTitle(tasks[0].name);
+        } else
+            setTitle("");
+    }
 
     const fetchProjectData = async () => {
         if (selectedIndex === -1) return;
@@ -53,6 +65,7 @@ const WorkSpace: React.FC = () => {
         }
     };
 
+
     useEffect(() => {
         if (!username) {
             navigate('/login');
@@ -60,18 +73,22 @@ const WorkSpace: React.FC = () => {
     }, [username, navigate]);
 
     useEffect(() => {
-        fetchProjectData()
+        fetchProjectData();
+        getProjectName();
     }, [selectedIndex]);
+
+
     return (
         <div className="flex-1 flex-col w-full h-full">
             <TopBar username={username} toggleSidebar={toggleSidebar}/>
             <div className="flex w-full h-full">
                 {isSidebarVisible &&
                     <Sidebar width={sidebarWidth} setWidth={setSidebarWidth} info={info}
-                             selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex}/>}
+                             selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex}
+                             taskList={taskList} setTaskList={setTaskList}/>}
                 <div className="flex flex-col pt-16 w-full h-full bg-[#e9f2ff]"
                      style={{paddingLeft: isSidebarVisible ? sidebarWidth + 2 : 0}}>
-                    <ProjectTopBar/>
+                    <TaskTopBar title={title}/>
                     <div className="flex h-full overflow-x-auto overflow-y-auto flex-row ">
                         <Swimlane title="待办" hasCreate={true} disabled={selectedIndex === -1}
                                   setModelOpen={setIsModelOpen}>
@@ -79,7 +96,7 @@ const WorkSpace: React.FC = () => {
                                 <Card key={project.id} title={project.subject} create_date={project.create_date}
                                       start_date={project.start_date} end_date={project.end_date}
                                       description={project.description}
-                                      creator={project.creator}></Card>
+                                      creator={project.creator} task_id={project.id} info={info}></Card>
                             ))}
                         </Swimlane>
                         <Swimlane title="正在进行" hasCreate={false}>
@@ -87,7 +104,7 @@ const WorkSpace: React.FC = () => {
                                 <Card key={project.id} title={project.subject} create_date={project.create_date}
                                       start_date={project.start_date} end_date={project.end_date}
                                       description={project.description}
-                                      creator={project.creator}></Card>
+                                      creator={project.creator} task_id={project.id} info={info}></Card>
                             ))}
                         </Swimlane>
                         <Swimlane title="已完成" hasCreate={false}>
@@ -95,15 +112,15 @@ const WorkSpace: React.FC = () => {
                                 <Card key={project.id} title={project.subject} create_date={project.create_date}
                                       start_date={project.start_date} end_date={project.end_date}
                                       description={project.description}
-                                      creator={project.creator}></Card>
+                                      creator={project.creator} task_id={project.id} info={info}></Card>
                             ))}
                         </Swimlane>
                     </div>
                 </div>
                 {isModelOpen &&
-                    <CreateProjectModal isOpen={isModelOpen} task_id={selectedIndex}
-                                        handleClose={() => setIsModelOpen(false)} info={info}
-                                        fetchProjectData={fetchProjectData}/>}
+                    <CreateTaskModal isOpen={isModelOpen} task_id={selectedIndex}
+                                     handleClose={() => setIsModelOpen(false)} info={info}
+                                     fetchProjectData={fetchProjectData}/>}
             </div>
             <CustomSnackbar messageInfo={message} onClose={() => closeInfo()}
                             isOpen={openMessage}/>

@@ -15,3 +15,15 @@ export interface Project {
     type: number;
     task_id: number;
 }
+
+export interface UploadFile {
+    id: number;
+    file_name: string;
+}
+
+export interface Comments {
+    id: number;
+    user_name: string;
+    timestamp: number;
+    project_id: number;
+}

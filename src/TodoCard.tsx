@@ -12,9 +12,11 @@ interface CardProps {
     start_date: string;
     end_date: string;
     description: string;
+    task_id: number;
+    info: (message: string, type: ("success" | "error")) => void;
 }
 
-const Card: React.FC<CardProps> = ({title, creator, create_date, start_date, end_date, description}) => {
+const Card: React.FC<CardProps> = ({title, creator, create_date, start_date, end_date, description, task_id, info}) => {
     const [Open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
 
@@ -49,9 +51,10 @@ const Card: React.FC<CardProps> = ({title, creator, create_date, start_date, end
                     <span className="text-blue-500">{creator}</span>
                 </div>
             </div>
-            <TaskModal title={title} creator={creator} create_date={create_date} start_date={start_date} end_date={end_date}
+            <TaskModal title={title} creator={creator} create_date={create_date} start_date={start_date}
+                       end_date={end_date}
                        description={description} isOpen={Open}
-                       handleClose={handleClose}/>
+                       handleClose={handleClose} info={info} task_id={task_id}/>
         </>
     );
 };

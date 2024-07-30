@@ -19,16 +19,20 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const ProjectTopBar = () => {
+interface TopBarProps {
+    title: string;
+}
+
+const TaskTopBar: React.FC<TopBarProps> = ({title}) => {
     const classes = useStyles();
     return (<AppBar color="transparent" position="static">
         <Toolbar>
-            <img src={defaultTaskImg} alt="Task" className="w-6 h-6"/>
+            <img src={defaultTaskImg} alt="Task" className="w-6 h-6 mr-2"/>
             <Typography variant="h6" className={classes.title}>
-                title
+                {title}
             </Typography>
         </Toolbar>
     </AppBar>);
 }
 
-export default ProjectTopBar
+export default TaskTopBar

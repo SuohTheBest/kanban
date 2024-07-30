@@ -26,17 +26,15 @@ export const TaskListItem: React.FC<TaskListProps> = ({
 
     async function handleTaskDeletion(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         event.stopPropagation();
-        try{
+        try {
             const response = await axios.delete(`${apiUrl}/task`, {params: {task_id: index}});
             if (response.data.success) {
                 info("🎉操作完成", "success");
                 await fetchData();
-            }
-            else{
+            } else {
                 info("操作失败，请稍后再试。", "error");
             }
-        }catch (err)
-        {
+        } catch (err) {
             info("操作失败，请稍后再试。", "error");
         }
     }
@@ -53,7 +51,7 @@ export const TaskListItem: React.FC<TaskListProps> = ({
             <ListItemIcon>
                 <StarBorder/>
             </ListItemIcon>
-            <ListItemText primary={name} sx={{wordWrap:"break-word"}}/>
+            <ListItemText primary={name} sx={{wordWrap: "break-word"}}/>
             <div className="hidden group-hover:block">
                 <IconButton edge="end" size="small" onClick={handleTaskDeletion}>
                     <RemoveTaskIcon className="text-red-400"/>
