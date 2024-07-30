@@ -7,10 +7,10 @@ import * as cors from '@koa/cors';
 import * as jwt from '@midwayjs/jwt';
 
 import { join } from 'path';
-// import { DefaultErrorFilter } from './filter/default.filter';
-// import { NotFoundFilter } from './filter/notfound.filter';
 import { ReportMiddleware } from './middleware/report.middleware';
 import { JwtMiddleware } from './middleware/jwt.middleware';
+import * as upload from '@midwayjs/upload';
+import * as fs from 'node:fs';
 
 @Configuration({
   imports: [
@@ -19,6 +19,7 @@ import { JwtMiddleware } from './middleware/jwt.middleware';
     typeorm,
     jwt,
     cors,
+    upload,
     {
       component: info,
       enabledEnvironment: ['local'],
@@ -40,6 +41,10 @@ export class MainConfiguration {
         origin: '*',
       })
     );
+    const uploadDir = this.app.getConfig('upload.baseDir');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
     // add filter
     // this.app.useFilter([NotFoundFilter, DefaultErrorFilter]);
   }
