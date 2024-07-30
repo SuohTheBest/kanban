@@ -23,7 +23,8 @@ export interface UploadFile {
 
 export interface Comments {
     id: number;
-    user_name: string;
+    username: string;
+    message: string;
     timestamp: number;
     project_id: number;
 }

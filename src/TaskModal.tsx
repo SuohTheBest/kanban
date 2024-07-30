@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {makeStyles, createStyles, Theme} from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -11,11 +11,10 @@ import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDown
 import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined';
 import {Textarea} from "@mui/joy";
 import CommentZone from "./CommentZone";
-import CommentBox from "./CommentBox";
 import Container from "@mui/material/Container";
 import {apiUrl, AvatarWithName, DateYMD, TimeWait} from "./Common";
 import axios from "axios";
-import {UploadFile} from "./interfaces";
+import {Comments, UploadFile} from "./interfaces";
 import List from "@mui/material/List";
 import {UploadListItem} from "./UploadListItem";
 
@@ -62,6 +61,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     const classes = useStyles();
     const [FoldDetail, setFoldDetail] = React.useState(false);
     const [uploadFileList, setUploadFileList] = React.useState<UploadFile[]>([]);
+    const [commentList, setCommentList] = useState<Comments[]>([]);
     const o_currDate = new Date();
     const o_createDate = new Date(create_date);
     const o_startDate = new Date(start_date);
@@ -94,11 +94,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            console.log(response.data);
             if (response.data.success) {
                 info("文件上传成功", "success");
                 await TimeWait(750);
-                await fetchUploadFileList();
+                await fetchUploadFile();
             } else {
                 info(response.data.value, "error");
             }
@@ -108,7 +107,22 @@ const TaskModal: React.FC<TaskModalProps> = ({
         }
     };
 
-    const fetchUploadFileList = async () => {
+    const fetchComments = async () => {
+        try {
+            const response = await axios.get(`${apiUrl}/project/comment`, {params: {'project_id': task_id}});
+            if (response.data.success) {
+                console.log(response.data.value);
+                setCommentList(response.data.value);
+            } else {
+                info("获取评论失败!", "error");
+            }
+        } catch (err) {
+            console.error(err);
+            info("获取评论失败!", "error");
+        }
+    }
+
+    const fetchUploadFile = async () => {
         try {
             const response = await axios.get(`${apiUrl}/project/upload`, {params: {'project_id': task_id}});
             if (response.data.success) {
@@ -124,7 +138,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
     useEffect(() => {
         if (!isOpen) return;
-        fetchUploadFileList();
+        fetchUploadFile();
+        fetchComments();
     }, [isOpen]);
 
     return (
@@ -181,15 +196,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                             <UploadListItem file_name={file.file_name}
                                                             file_id={file.id}
                                                             task_id={task_id}
-                                                            fetchUploadList={fetchUploadFileList}
+                                                            fetchUploadList={fetchUploadFile}
                                                             info={info} key={file.id}/>))}
                                     </List>
                                 </div>}
                                 <h2 className="pt-5 font-semibold">活动</h2>
-                                <CommentZone imgLink='broken'>
-                                    <CommentBox imgLink='broken' userName='stb'
-                                                content='汪大吼汪大吼汪大吼汪大吼'></CommentBox>
-                                </CommentZone>
+                                <CommentZone commentList={commentList} fetchComments={fetchComments} info={info}
+                                             task_id={task_id}/>
                             </Container>
                             <Container
                                 sx={{
