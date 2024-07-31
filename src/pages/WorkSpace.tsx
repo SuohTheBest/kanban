@@ -116,7 +116,7 @@ const WorkSpace: React.FC = () => {
                                       description={project.description}
                                       creator={project.creator} task_id={project.id} handleDelete={() => {
                                     handleDeleteTask(project.id);
-                                }} info={info}/>
+                                }} info={info} fetchProjectData={fetchProjectData}/>
                             ))}
                         </Swimlane>
                         <Swimlane title="正在进行" hasCreate={false}>
@@ -126,7 +126,7 @@ const WorkSpace: React.FC = () => {
                                       description={project.description}
                                       creator={project.creator} task_id={project.id} handleDelete={() => {
                                     handleDeleteTask(project.id);
-                                }} info={info}></Card>
+                                }} info={info} fetchProjectData={fetchProjectData}></Card>
                             ))}
                         </Swimlane>
                         <Swimlane title="已完成" hasCreate={false}>
@@ -136,7 +136,7 @@ const WorkSpace: React.FC = () => {
                                       description={project.description}
                                       creator={project.creator} task_id={project.id} handleDelete={() => {
                                     handleDeleteTask(project.id);
-                                }} info={info}></Card>
+                                }} info={info} fetchProjectData={fetchProjectData}></Card>
                             ))}
                         </Swimlane>
                     </div>

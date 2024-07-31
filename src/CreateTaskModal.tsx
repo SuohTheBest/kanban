@@ -35,17 +35,35 @@ interface TaskModalProps {
     info: (message: string, type: ("error" | "success")) => void;
     handleClose: () => void;
     fetchProjectData: () => Promise<void>;
+    alter?: boolean;
+    default_subject?: string;
+    default_startDate?: string;
+    default_endDate?: string;
+    default_description?: string;
 }
 
-const CreateTaskModal: React.FC<TaskModalProps> = ({isOpen, task_id, info, handleClose, fetchProjectData}) => {
+const CreateTaskModal: React.FC<TaskModalProps> = ({
+                                                       isOpen,
+                                                       task_id,
+                                                       info,
+                                                       handleClose,
+                                                       fetchProjectData,
+                                                       alter = false,
+                                                       default_subject = '',
+                                                       default_startDate = '',
+                                                       default_endDate = '',
+                                                       default_description = ''
+                                                   }) => {
     const classes = useStyles();
     const location = useLocation();
 
     const currDate = getDate();
-    const [subject, setSubject] = useState('');
-    const [startDate, setStartDate] = useState(currDate);
-    const [endDate, setEndDate] = useState(currDate);
-    const [description, setDescription] = useState('');
+    if (default_startDate === '') default_startDate = currDate;
+    if (default_endDate === '') default_endDate = currDate;
+    const [subject, setSubject] = useState(default_subject);
+    const [startDate, setStartDate] = useState(default_startDate);
+    const [endDate, setEndDate] = useState(default_endDate);
+    const [description, setDescription] = useState(default_description);
 
     const username = location.state?.username;
 
@@ -66,28 +84,54 @@ const CreateTaskModal: React.FC<TaskModalProps> = ({isOpen, task_id, info, handl
         else if (o_startDate > o_currDate) type = 1;//待办
         else type = 2;
 
-        try {
-            const response = await axios.post(`${apiUrl}/project`, {
-                subject: subject,
-                creator: username,
-                create_date: currDate,
-                start_date: startDate,
-                end_date: endDate,
-                description: description,
-                type: type,
-                task_id: task_id,
-            });
-            if (response.data.success) {
-                info("🎉添加成功", 'success');
-                await fetchProjectData();
-                await TimeWait(750);
-                handleClose();
-            } else {
+        if (!alter) {
+            try {
+                const response = await axios.post(`${apiUrl}/project`, {
+                    subject: subject,
+                    creator: username,
+                    create_date: currDate,
+                    start_date: startDate,
+                    end_date: endDate,
+                    description: description,
+                    type: type,
+                    task_id: task_id,
+                });
+                if (response.data.success) {
+                    info("🎉添加成功", 'success');
+                    await fetchProjectData();
+                    await TimeWait(750);
+                    handleClose();
+                } else {
+                    info("添加失败，请稍后重试", "error");
+                }
+            } catch (err) {
+                console.log(err);
                 info("添加失败，请稍后重试", "error");
             }
-        } catch (err) {
-            console.log(err);
-            info("添加失败，请稍后重试", "error");
+        } else {
+            try {
+                const response = await axios.put(`${apiUrl}/project`, {
+                    id: task_id,
+                    subject: subject,
+                    creator: username,
+                    create_date: currDate,
+                    start_date: startDate,
+                    end_date: endDate,
+                    description: description,
+                    type: type,
+                });
+                if (response.data.success) {
+                    info("🎉修改成功", 'success');
+                    await fetchProjectData();
+                    await TimeWait(750);
+                    handleClose();
+                } else {
+                    info("修改失败，请稍后重试", "error");
+                }
+            } catch (err) {
+                console.log(err);
+                info("修改失败，请稍后重试", "error");
+            }
         }
     }
 
@@ -104,32 +148,38 @@ const CreateTaskModal: React.FC<TaskModalProps> = ({isOpen, task_id, info, handl
                 <div className='w-[60vh]'>
                     <Container fixed className="flex flex-col px-4 pb-10 pt-8 bg-white">
                         <div className="flex items-center ml-5 mb-2 justify-between">
-                            <h1 className="font-semibold text-2xl"> 创建任务 </h1>
+                            <h1 className="font-semibold text-2xl">
+                                {!alter ? '创建任务' : '修改任务'}
+                            </h1>
                             <IconButton className="rounded" onClick={handleClose}> <CloseOutlinedIcon/> </IconButton>
                         </div>
                         <div className="flex flex-col mt-5 ml-5 mb-2">
                             <h2 className="font-semibold mr-4 pb-5"> 主题 </h2>
                             <Textarea placeholder="需要做什么？" maxRows={2}
+                                      value={subject}
                                       onChange={(event) => {
                                           setSubject(event.target.value);
                                       }}/>
                         </div>
                         <div className="flex items-center mt-5 ml-5 mb-2 justify-between">
                             <h2 className="font-semibold mr-4"> 开始日期 </h2>
-                            <DateSelector label='开始日期' onChange={(date) => setStartDate(date.target.value)}/>
+                            <DateSelector label='开始日期' defaultValue={startDate}
+                                          onChange={(date) => setStartDate(date.target.value)}/>
                         </div>
                         <div className="flex items-center mt-5 ml-5 mb-2 justify-between">
                             <h2 className="font-semibold mr-4"> 截止日期 </h2>
-                            <DateSelector label='开始日期' onChange={(date) => setEndDate(date.target.value)}/>
+                            <DateSelector label='开始日期' defaultValue={endDate}
+                                          onChange={(date) => setEndDate(date.target.value)}/>
                         </div>
                         <h2 className="mt-5 ml-5 mb-2 font-semibold  mr-4"> 描述 (可选) </h2>
                         <Textarea className="ml-5 mt-5" placeholder="添加描述" maxRows={4}
+                                  value={description}
                                   onChange={(event) => {
                                       setDescription(event.target.value);
                                   }}/>
                         <div className='flex w-full mt-12 ml-auto flex-row-reverse'>
                             <Button variant="contained" className={classes.createButton}
-                                    onClick={handleSubmit}>创建</Button>
+                                    onClick={handleSubmit}>{!alter ? '创建' : '修改'}</Button>
                         </div>
                     </Container>
                 </div>

@@ -111,7 +111,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
         try {
             const response = await axios.get(`${apiUrl}/project/comment`, {params: {'project_id': task_id}});
             if (response.data.success) {
-                console.log(response.data.value);
                 setCommentList(response.data.value);
             } else {
                 info("获取评论失败!", "error");

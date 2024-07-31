@@ -53,17 +53,18 @@ export function getDate() {
 
 interface DateSelectorProps {
     label: string;
+    defaultValue?: string;
     onChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
 }
 
-export const DateSelector: React.FC<DateSelectorProps> = ({label, onChange}) => {
+export const DateSelector: React.FC<DateSelectorProps> = ({label, defaultValue = getDate(), onChange}) => {
     return (
         <form className='flex flex-wrap' noValidate>
             <TextField
                 id="date"
                 label={label}
                 type="date"
-                defaultValue={getDate()}
+                defaultValue={defaultValue}
                 InputLabelProps={{
                     shrink: true,
                 }}

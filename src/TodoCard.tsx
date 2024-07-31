@@ -4,6 +4,8 @@ import MdLabel from './assets/label.svg';
 import TaskModal from "./TaskModal";
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from "@material-ui/core/IconButton";
+import EditIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import CreateTaskModal from "./CreateTaskModal";
 
 interface CardProps {
     title: string;
@@ -15,6 +17,7 @@ interface CardProps {
     task_id: number;
     handleDelete: () => void;
     info: (message: string, type: ("success" | "error")) => void;
+    fetchProjectData: () => Promise<void>;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -26,14 +29,16 @@ const Card: React.FC<CardProps> = ({
                                        description,
                                        handleDelete,
                                        task_id,
-                                       info
+                                       info,
+                                       fetchProjectData
                                    }) => {
-    const [Open, setOpen] = useState(false);
+    const [modelOpen, setModelOpen] = useState(false);
+    const [editModelOpen, setEditModelOpen] = useState(false);
 
-    const handleOpen = () => setOpen(true);
+    const handleOpen = () => setModelOpen(true);
 
     function handleClose() {
-        setOpen(false);
+        setModelOpen(false);
     }
 
     return (
@@ -44,6 +49,11 @@ const Card: React.FC<CardProps> = ({
                 <div className="flex justify-between">
                     <h3 className="text-lg font-bold py-1">{title}</h3>
                     <div className="hidden group-hover:block">
+                        <IconButton size='small' onClick={(e) => {
+                            e.stopPropagation();
+                            setEditModelOpen(true);
+                        }}><EditIcon className="text-lime-500"/>
+                        </IconButton>
                         <IconButton size='small'
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -63,8 +73,14 @@ const Card: React.FC<CardProps> = ({
             </div>
             <TaskModal title={title} creator={creator} create_date={create_date} start_date={start_date}
                        end_date={end_date}
-                       description={description} isOpen={Open}
+                       description={description} isOpen={modelOpen}
                        handleClose={handleClose} info={info} task_id={task_id}/>
+            <CreateTaskModal isOpen={editModelOpen} handleClose={() => {
+                setEditModelOpen(false)
+            }} task_id={task_id} info={info} fetchProjectData={fetchProjectData} alter={true}
+                             default_subject={title} default_startDate={start_date} default_endDate={end_date}
+                             default_description={description}/>
+
         </>
     );
 };
