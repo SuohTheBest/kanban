@@ -18,6 +18,7 @@ import { join } from 'path';
 import * as fs from 'node:fs';
 import { readFileSync } from 'fs';
 import { existsSync } from 'node:fs';
+import { User } from '../entity/User';
 
 @Controller('/project')
 export class ProjectController {
@@ -37,8 +38,8 @@ export class ProjectController {
   async addProject(@Body() body: ProjectData) {
     try {
       const { task_id } = body;
-      const user_id = this.ctx.state.user.id;
-      await this.taskService.ensureValidTaskId(task_id, user_id);
+      const user = this.ctx.state.user as User;
+      await this.taskService.ensureValidTaskId(task_id, user, false);
       const newProject = await this.projectService.addProject(body);
       return { success: true, value: newProject };
     } catch (err) {
@@ -50,13 +51,27 @@ export class ProjectController {
   @Get('/')
   async getAllProject(@Query('task_id') task_id: number) {
     try {
-      const user_id = this.ctx.state.user.id;
-      await this.taskService.ensureValidTaskId(task_id, user_id);
+      const user = this.ctx.state.user as User;
+      await this.taskService.ensureValidTaskId(task_id, user, false);
       const projects = await this.projectService.getProjectsByTaskId(task_id);
       return { success: true, value: projects };
     } catch (err) {
       console.log(err);
       return { success: false };
+    }
+  }
+
+  @Del('/')
+  async deleteProject(@Query('project_id') project_id: number) {
+    try {
+      const user = this.ctx.state.user as User;
+      const project = await this.projectService.getProjectById(project_id);
+      await this.taskService.ensureValidTaskId(project.task_id, user, false);
+      await this.projectService.deleteProjectById(project_id);
+      return { success: true };
+    } catch (err) {
+      console.log(err);
+      return { success: false, value: err.message };
     }
   }
 
@@ -70,8 +85,8 @@ export class ProjectController {
       const file = files[0];
       const project_id = fields.task_id as number;
       const project = await this.projectService.getProjectById(project_id);
-      const user_id = this.ctx.state.user.id;
-      await this.taskService.ensureValidTaskId(project.task_id, user_id);
+      const user = this.ctx.state.user;
+      await this.taskService.ensureValidTaskId(project.task_id, user, false);
       const fileName = file.filename;
       const filePath = file.data;
       const targetPath = join(
@@ -115,19 +130,12 @@ export class ProjectController {
   @Del('/upload')
   async deleteFile(@Query('file_id') id: number) {
     try {
-      const user_id = this.ctx.state.user.id;
+      const user = this.ctx.state.user as User;
       const file = await this.projectService.getUploadFileById(id);
       const project_id = file.project_id;
       const project = await this.projectService.getProjectById(project_id);
-      await this.taskService.ensureValidTaskId(project.task_id, user_id);
-      const file_name = file.file_name;
-      const upload_dir = this.ctx.app.getConfig('upload.baseDir');
-      const file_path = join(
-        upload_dir,
-        project_id.toString() + '-' + file_name
-      );
-      fs.unlinkSync(file_path);
-      await this.projectService.deleteUploadFileById(id);
+      await this.taskService.ensureValidTaskId(project.task_id, user, false);
+      await this.projectService.deleteUploadFile(file);
       return { success: true };
     } catch (err) {
       console.log(err);
@@ -141,9 +149,9 @@ export class ProjectController {
     @Query('project_id') project_id: number
   ) {
     try {
-      const user_id = this.ctx.state.user.id;
+      const user = this.ctx.state.user as User;
       const project = await this.projectService.getProjectById(project_id);
-      await this.taskService.ensureValidTaskId(project.task_id, user_id);
+      await this.taskService.ensureValidTaskId(project.task_id, user, false);
       const uploadDir = this.ctx.app.getConfig('upload.baseDir');
       const filePath = join(uploadDir, project_id.toString() + '-' + file_name);
       if (!existsSync(filePath)) {
@@ -162,9 +170,9 @@ export class ProjectController {
   @Get('/comment')
   async getComments(@Query('project_id') project_id: number) {
     try {
-      const user_id = this.ctx.state.user.id;
+      const user = this.ctx.state.user as User;
       const project = await this.projectService.getProjectById(project_id);
-      await this.taskService.ensureValidTaskId(project.task_id, user_id);
+      await this.taskService.ensureValidTaskId(project.task_id, user, false);
       const comments = await this.projectService.getCommentsByProjectId(
         project_id
       );
@@ -195,12 +203,15 @@ export class ProjectController {
   @Del('/comment')
   async deleteComment(@Query('comment_id') id: number) {
     try {
-      const user_id = this.ctx.state.user.id;
+      const user = this.ctx.state.user;
       const comment = await this.projectService.getCommentById(id);
+      if (comment.username !== user.username) {
+        return { success: false };
+      }
       const project = await this.projectService.getProjectById(
         comment.project_id
       );
-      await this.taskService.checkTaskValid(project.task_id, user_id);
+      await this.taskService.ensureValidTaskId(project.task_id, user, false);
       await this.projectService.deleteCommentById(id);
       return { success: true };
     } catch (err) {

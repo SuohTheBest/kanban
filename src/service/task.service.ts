@@ -2,16 +2,35 @@ import { Provide } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from '../entity/Task';
+import { User } from '../entity/User';
 
 @Provide()
 export class TaskService {
   @InjectEntityModel(Task)
   taskRepository: Repository<Task>;
 
-  async ensureValidTaskId(task_id: number, user_id: number) {
+  async ensureValidTaskId(task_id: number, user: User, strict: boolean) {
+    const user_id = user.id;
     if (!(await this.checkTaskValid(user_id, task_id))) {
+      if (strict || user.collaborate === null) throw Error('Task id not valid');
+      for (const involve_id of user.collaborate) {
+        if (Number(involve_id) === task_id) return;
+      }
       throw Error('Task id not valid');
     }
+  }
+
+  async getTasks(task_ids: number[]): Promise<Task[]> {
+    if (task_ids === null || task_ids.length === 0) return [];
+    const tasks = [] as Task[];
+    for (const id of task_ids) {
+      tasks.push(await this.getTask(id));
+    }
+    return tasks;
+  }
+
+  async getTask(task_id: number): Promise<Task> {
+    return this.taskRepository.findOneBy({ id: task_id });
   }
 
   async getTaskByUserId(user_id: number): Promise<Task[]> {
@@ -22,7 +41,7 @@ export class TaskService {
     const newTask = new Task();
     newTask.user_id = user_id;
     newTask.name = name;
-    return await this.taskRepository.save(newTask);
+    return this.taskRepository.save(newTask);
   }
 
   async deleteTask(task_id: number): Promise<void> {

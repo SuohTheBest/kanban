@@ -1,7 +1,6 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-@Unique(['file_name', 'project_id'])
 export class UploadFile {
   @PrimaryGeneratedColumn()
   id: number;
@@ -9,7 +8,7 @@ export class UploadFile {
   @Column()
   file_name: string;
 
-  @Column()
+  @Column({ unique: true })
   file_path: string;
 
   @Column()

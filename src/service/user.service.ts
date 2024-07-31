@@ -67,4 +67,13 @@ export class UserService {
       throw error;
     }
   }
+
+  async addCollaborate(email: string, task_id: number, user: User) {
+    const target_user = await this.userRepository.findOneBy({ email: email });
+    if (!target_user) throw Error('用户不存在!');
+    if (target_user.id === user.id) throw Error('不能添加自己!');
+    if (target_user.collaborate === null) target_user.collaborate = [];
+    target_user.collaborate.push(task_id);
+    await this.userRepository.save(target_user);
+  }
 }
