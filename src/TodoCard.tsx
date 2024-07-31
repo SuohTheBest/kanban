@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import DateIcon from './assets/date.svg';
 import MdLabel from './assets/label.svg';
 import TaskModal from "./TaskModal";
-import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from "@material-ui/core/IconButton";
 
 interface CardProps {
@@ -13,20 +13,27 @@ interface CardProps {
     end_date: string;
     description: string;
     task_id: number;
+    handleDelete: () => void;
     info: (message: string, type: ("success" | "error")) => void;
 }
 
-const Card: React.FC<CardProps> = ({title, creator, create_date, start_date, end_date, description, task_id, info}) => {
+const Card: React.FC<CardProps> = ({
+                                       title,
+                                       creator,
+                                       create_date,
+                                       start_date,
+                                       end_date,
+                                       description,
+                                       handleDelete,
+                                       task_id,
+                                       info
+                                   }) => {
     const [Open, setOpen] = useState(false);
+
     const handleOpen = () => setOpen(true);
 
     function handleClose() {
         setOpen(false);
-    }
-
-    function btn_more_click(event: React.MouseEvent) {
-        event.stopPropagation();
-        console.log('btn_more_click');
     }
 
     return (
@@ -38,7 +45,10 @@ const Card: React.FC<CardProps> = ({title, creator, create_date, start_date, end
                     <h3 className="text-lg font-bold py-1">{title}</h3>
                     <div className="hidden group-hover:block">
                         <IconButton size='small'
-                                    onClick={btn_more_click}><MoreHorizOutlinedIcon/>
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete();
+                                    }}><DeleteIcon className="text-red-400"/>
                         </IconButton>
                     </div>
                 </div>

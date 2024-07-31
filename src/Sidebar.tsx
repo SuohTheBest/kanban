@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             if (!allTasks.data.success) {
                 info("更新数据异常!", "error");
             } else {
-                setTaskList(allTasks.data.value as Task[]);
+                setTaskList(allTasks.data.value);
             }
         } catch (err) {
             console.log(err);
@@ -83,10 +83,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 <img src={addButton} alt="Add" className="w-6 h-6"/>
                             </IconButton>
                         </div>
-                        <ExpandablePanel title={"我创建的"} items={taskList} fetchData={fetchData} info={info}
-                                         selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex}
-
-                        />
+                        <ExpandablePanel title={"我创建的"} items={taskList.filter((task) => {
+                            return task.type === 0;
+                        })} fetchData={fetchData} info={info} showButton={true} selectedIndex={selectedIndex}
+                                         setSelectedIndex={setSelectedIndex}/>
+                        <ExpandablePanel title={"我参与的"} items={taskList.filter((task) => {
+                            return task.type === 1;
+                        })} fetchData={fetchData} info={info} showButton={false} selectedIndex={selectedIndex}
+                                         setSelectedIndex={setSelectedIndex}/>
                     </div>
                 </div>
                 <div
@@ -94,7 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     className="justify-end top-0 w-1 h-full cursor-ew-resize bg-gray-200 hover:bg-sky-500"
                 />
             </div>
-            <CreateProjectModal isOpen={isOpen} handleClose={handleClose} fetchData={fetchData} info={info}/>
+            <CreateProjectModal open={isOpen} handleClose={handleClose} fetchData={fetchData} info={info}/>
         </Paper>
     );
 }

@@ -7,7 +7,7 @@ import TaskTopBar from "../TaskTopBar";
 import {useLocation, useNavigate} from "react-router-dom";
 import {CustomSnackbar, useCustomSnackbar} from "../CustomSnackBar";
 import axios from "axios";
-import {apiUrl} from "../Common";
+import {apiUrl, TimeWait} from "../Common";
 import {Project, Task} from "../interfaces";
 import CreateTaskModal from "../CreateTaskModal";
 
@@ -47,7 +47,10 @@ const WorkSpace: React.FC = () => {
     }
 
     const fetchProjectData = async () => {
-        if (selectedIndex === -1) return;
+        if (selectedIndex === -1) {
+            setProjects({type1: [], type2: [], type3: []});
+            return;
+        }
         try {
             const response = await axios.get(`${apiUrl}/project`, {params: {task_id: selectedIndex}});
             if (response.data.success) {
@@ -65,6 +68,21 @@ const WorkSpace: React.FC = () => {
         }
     };
 
+    const handleDeleteTask = async (project_id: number) => {
+        try {
+            const response = await axios.delete(`${apiUrl}/project`, {params: {project_id: project_id}});
+            if (response.data.success) {
+                info("🎉操作成功", 'success');
+                await TimeWait(750);
+                await fetchProjectData();
+            } else {
+                info("删除失败，请稍后重试", 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            info("删除失败，请稍后重试", 'error');
+        }
+    }
 
     useEffect(() => {
         if (!username) {
@@ -96,7 +114,9 @@ const WorkSpace: React.FC = () => {
                                 <Card key={project.id} title={project.subject} create_date={project.create_date}
                                       start_date={project.start_date} end_date={project.end_date}
                                       description={project.description}
-                                      creator={project.creator} task_id={project.id} info={info}></Card>
+                                      creator={project.creator} task_id={project.id} handleDelete={() => {
+                                    handleDeleteTask(project.id);
+                                }} info={info}/>
                             ))}
                         </Swimlane>
                         <Swimlane title="正在进行" hasCreate={false}>
@@ -104,7 +124,9 @@ const WorkSpace: React.FC = () => {
                                 <Card key={project.id} title={project.subject} create_date={project.create_date}
                                       start_date={project.start_date} end_date={project.end_date}
                                       description={project.description}
-                                      creator={project.creator} task_id={project.id} info={info}></Card>
+                                      creator={project.creator} task_id={project.id} handleDelete={() => {
+                                    handleDeleteTask(project.id);
+                                }} info={info}></Card>
                             ))}
                         </Swimlane>
                         <Swimlane title="已完成" hasCreate={false}>
@@ -112,7 +134,9 @@ const WorkSpace: React.FC = () => {
                                 <Card key={project.id} title={project.subject} create_date={project.create_date}
                                       start_date={project.start_date} end_date={project.end_date}
                                       description={project.description}
-                                      creator={project.creator} task_id={project.id} info={info}></Card>
+                                      creator={project.creator} task_id={project.id} handleDelete={() => {
+                                    handleDeleteTask(project.id);
+                                }} info={info}></Card>
                             ))}
                         </Swimlane>
                     </div>

@@ -14,12 +14,23 @@ interface SwimlaneProps {
 const useStyles = makeStyles(() => ({
     paperRoot: {
         backgroundColor: '#f7f8f9'
-    }
+    },
+    button: {
+        color: '#4285f4',
+        borderColor: '#1a73e8',
+        '&:hover': {
+            color: '#1a73e8',
+        },
+    },
 }));
 
 const Swimlane: React.FC<SwimlaneProps> = ({
-                                               hasCreate, title, disabled = false, setModelOpen = () => {
-    }, children
+                                               hasCreate,
+                                               title,
+                                               disabled = false,
+                                               setModelOpen = () => {
+                                               },
+                                               children
                                            }) => {
     const classes = useStyles();
 
@@ -38,12 +49,12 @@ const Swimlane: React.FC<SwimlaneProps> = ({
                         {children}
                     </div>
                 )}
-                {hasCreate && <Button color="primary" variant={"outlined"} disabled={disabled} onClick={() => {
-                    setModelOpen(true)
-                }}
-                >
-                    + 创建
-                </Button>}
+                {hasCreate &&
+                    <Button className={classes.button} variant={"outlined"} disabled={disabled} onClick={() => {
+                        setModelOpen(true)
+                    }}>
+                        + 创建
+                    </Button>}
             </Paper>
         </div>
 

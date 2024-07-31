@@ -211,13 +211,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                     flex: 4,
                                 }}
                                 className="flex flex-col ml-3 mb-1 overflow-y-auto">
-                                <Button
-                                    endIcon={<KeyboardArrowDownOutlinedIcon/>}
-                                    variant="contained"
-                                >
-                                    Type
-                                </Button>
-                                <div className='border rounded-lg mt-5'>
+                                <div className='border rounded-lg mt-16'>
                                     <Button className='w-full' onClick={toggleFoldDetail}>
                                         <h2 className="font-semibold">详细信息</h2>
                                         {!FoldDetail && <KeyboardArrowDownOutlinedIcon/>}

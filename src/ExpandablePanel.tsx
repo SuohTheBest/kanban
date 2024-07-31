@@ -11,6 +11,7 @@ interface ExpandablePanelProps {
     title: string;
     fetchData: () => Promise<void>;
     selectedIndex: number;
+    showButton: boolean;
     setSelectedIndex: (index: number) => void;
     info: (message: string, type: ("error" | "success")) => void;
     items?: Task[];
@@ -20,6 +21,7 @@ const ExpandablePanel: React.FC<ExpandablePanelProps> = ({
                                                              title,
                                                              fetchData,
                                                              selectedIndex,
+                                                             showButton,
                                                              setSelectedIndex,
                                                              info,
                                                              items = []
@@ -40,8 +42,8 @@ const ExpandablePanel: React.FC<ExpandablePanelProps> = ({
                 <List component="div" disablePadding>
                     {items.map((item) => (
                         <TaskListItem name={item.name}
-                                      data-userid={item.user_id}
                                       key={item.id}
+                                      showButton={showButton}
                                       index={item.id}
                                       selectedIndex={selectedIndex}
                                       setSelectedIndex={setSelectedIndex}

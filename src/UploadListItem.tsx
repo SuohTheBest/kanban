@@ -70,9 +70,8 @@ export const UploadListItem: React.FC<UploadListProps> = ({
             </IconButton>
             <div className="px-1"></div>
             <IconButton edge="end" size={"small"} aria-label="delete" onClick={deleteFile}>
-                <DeleteIcon className="text-red-500"/>
+                <DeleteIcon className="text-red-400"/>
             </IconButton>
-
         </ListItem>
     );
 }
