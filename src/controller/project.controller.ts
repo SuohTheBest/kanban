@@ -7,6 +7,7 @@ import {
   Get,
   Inject,
   Post,
+  Put,
   Query,
 } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
@@ -19,6 +20,7 @@ import * as fs from 'node:fs';
 import { readFileSync } from 'fs';
 import { existsSync } from 'node:fs';
 import { User } from '../entity/User';
+import { Project } from '../entity/Project';
 
 @Controller('/project')
 export class ProjectController {
@@ -72,6 +74,21 @@ export class ProjectController {
     } catch (err) {
       console.log(err);
       return { success: false, value: err.message };
+    }
+  }
+
+  @Put('/')
+  async updateProject(@Body() body: Project) {
+    try {
+      const user = this.ctx.state.user as User;
+      const old_project = await this.projectService.getProjectById(body.id);
+      const task_id = old_project.task_id;
+      await this.taskService.ensureValidTaskId(task_id, user, false);
+      await this.projectService.updateProject(body);
+      return { success: true };
+    } catch (err) {
+      console.log(err);
+      return { success: false };
     }
   }
 

@@ -14,6 +14,7 @@ import { User } from '../entity/User';
 import { ProjectService } from '../service/project.service';
 import { UserService } from '../service/user.service';
 
+// 后端的task对应前端的project，发现的时候已经为时已晚，我懒得改了😇
 @Controller('/task')
 export class TaskController {
   @Inject()

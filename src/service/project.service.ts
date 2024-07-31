@@ -36,6 +36,10 @@ export class ProjectService {
     return this.projectRepository.save(newProject);
   }
 
+  async updateProject(project: Project): Promise<void> {
+    await this.projectRepository.update(project.id, project);
+  }
+
   async deleteProjectByTaskId(task_id: number): Promise<void> {
     const projects = await this.getProjectsByTaskId(task_id);
     for (const project of projects) {
