@@ -21,13 +21,17 @@ jobs:
     - name: Install dependencies
       run: |
         cd frontend
-        npm install
+        npm install --force
 
     - name: Build frontend
       run: |
         cd frontend
         npm run build
 
+    - name: Deploy frontend
+      run: scp -r frontend/dist/* root@47.97.175.75:/web/frontend
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   build-backend:
     runs-on: ubuntu-latest
 
@@ -49,4 +53,9 @@ jobs:
       run: |
         cd backend
         npm run build
+
+    - name: Deploy backend
+      run: scp -r backend/dist/* root@47.97.175.75:/web/backend
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
