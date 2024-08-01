@@ -22,7 +22,7 @@ export default (appInfo: MidwayAppInfo) => {
           database: join(__dirname, '../../database.sqlite'),
           synchronize: true,
           entities: [User, Task, Project, UploadFile, Comments],
-          logging: true,
+          logging: false,
           // entities: [join(__dirname, '../entity/*.{ts,js}')],
         },
       },
