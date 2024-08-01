@@ -29,9 +29,8 @@ jobs:
         npm run build
 
     - name: Deploy frontend
-      run: scp -r frontend/dist/* root@47.97.175.75:/web/frontend
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: sshpass -p "${{ secrets.SERVER_PWD }}" scp -o StrictHostKeyChecking=no -r frontend/dist/ root@${{ secrets.SERVER_IP }}:/web/frontend
+      
   build-backend:
     runs-on: ubuntu-latest
 
@@ -55,7 +54,5 @@ jobs:
         npm run build
 
     - name: Deploy backend
-      run: scp -r backend/dist/* root@47.97.175.75:/web/backend
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: sshpass -p "${{ secrets.SERVER_PWD }}" scp -o StrictHostKeyChecking=no -r backend/dist/ root@${{ secrets.SERVER_IP }}:/web/backend
 
