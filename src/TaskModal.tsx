@@ -159,28 +159,30 @@ const TaskModal: React.FC<TaskModalProps> = ({
                             <h1 className="font-semibold text-2xl"> {title} </h1>
                             <IconButton className="rounded" onClick={handleClose}> <CloseOutlinedIcon/> </IconButton>
                         </div>
+                        <div className="ml-5 mb-3 justify-between">
+                            <input
+                                accept="*"
+                                className='hidden'
+                                id="button-file"
+                                type="file"
+                                onChange={handleFileChange}
+                            />
+                            <label htmlFor='button-file'>
+                                <Button
+                                    startIcon={<AttachFileOutlinedIcon/>}
+                                    variant="contained"
+                                    component="span"
+                                >
+                                    添加附件
+                                </Button>
+                            </label>
+                        </div>
                         <div className="flex">
                             <Container sx={{
                                 maxHeight: '75vh',
                                 overflow: 'auto',
                                 flex: 6,
-                            }} className="flex flex-row mr-3 mb-1 overflow-y-auto">
-                                <input
-                                    accept="*"
-                                    className='hidden'
-                                    id="button-file"
-                                    type="file"
-                                    onChange={handleFileChange}
-                                />
-                                <label htmlFor='button-file'>
-                                    <Button
-                                        startIcon={<AttachFileOutlinedIcon/>}
-                                        variant="contained"
-                                        component="span"
-                                    >
-                                        添加附件
-                                    </Button>
-                                </label>
+                            }} className="flex flex-row mr-3 mb-1">
                                 <h2 className="pt-5 font-semibold pb-2">描述</h2>
                                 <Textarea
                                     placeholder="编辑描述"
@@ -233,8 +235,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
                                                 <div className='flex py-3 items-center justify-between'>
                                                     <h3 className='text-sm py-3'>截止日期</h3>
                                                     <DateYMD year={o_endDate.getFullYear()}
-                                                             month={o_startDate.getMonth() + 1}
-                                                             day={o_startDate.getDate()}/>
+                                                             month={o_endDate.getMonth() + 1}
+                                                             day={o_endDate.getDate()}/>
                                                 </div>
                                             </div>
                                         </>
